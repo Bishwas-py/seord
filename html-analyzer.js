@@ -72,6 +72,10 @@ class HtmlAnalyzer {
         });
         return outboundLinksCount;
     }
+
+    getWordCount() {
+        return this.htmlDom.text().split(' ').length;
+    }
 }
 
 module.exports = HtmlAnalyzer;

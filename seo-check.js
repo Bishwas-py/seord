@@ -3,24 +3,31 @@ const HtmlAnalyzer = require('./html-analyzer');
 
 /**
  * Class to perform SEO check of a website
+ * @typedef {{
+ *    question: string,
+ *    html_text: string,
+ *    keyword: string,
+ *    sub_keywords: Array<string>,
+ *    meta_description: string,
+ *    meta_title: string,
+ *    meta_keywords: string,
+ *    language_code: string,
+ *    country_code: string
+ *    }} ContentJson
+ */
+
+/**
+ * Class to perform SEO check of a website
  * @class
  */
 class SeoCheck {
     /**
      * Constructor
-     * @param {string} htmlContent - The HTML content of the website
-     * @param {string} keyword - The main keyword for the website
-     * @param {Array<string>} subKeywords - Array of sub keywords
-     * @param {string} languageCode - Default='en', Language of the website
-     * @param {string} countryCode - Default='US', Country code of the website
+     * @param {ContentJson} contentJson - JSON object containing html content, main keyword, sub keywords, language code and country code
      * @param {?string} siteDomainName - Domain name of the website
-     */
-    constructor(htmlContent, keyword, subKeywords, languageCode = 'en', countryCode = 'US', siteDomainName = null) {
-        this.htmlContent = htmlContent;
-        this.keyword = keyword;
-        this.subKeywords = subKeywords;
-        this.languageCode = languageCode;
-        this.countryCode = countryCode;
+    */
+    constructor(contentJson, siteDomainName = null) {
+        this.content = contentJson;
         this.siteDomainName = siteDomainName;
     }
 
@@ -29,14 +36,10 @@ class SeoCheck {
      * @returns {Object} Object containing details of SEO analysis
      */
     analyzeSeo() {
-        const htmlAnalyzer = new HtmlAnalyzer(this.htmlContent, this.siteDomainName);
+        const htmlAnalyzer = new HtmlAnalyzer(this.content.html_text, this.siteDomainName);
         const seoAnalyzer = new SeoAnalyzer(
-            this.keyword,
-            this.subKeywords,
-            htmlAnalyzer,
-            this.siteDomainName,
-            this.languageCode,
-            this.countryCode
+            this.content,
+            htmlAnalyzer
         );
 
         return {
@@ -48,7 +51,7 @@ class SeoCheck {
             totalLinks: htmlAnalyzer.getTotalLinks(),
             totalInternalLinks: htmlAnalyzer.getTotalInternalLinks(),
             totalOutboundLinks: htmlAnalyzer.getTotalOutboundLinks(),
-            criticalWarning: seoAnalyzer.getCriticalsWarning()
+            criticalWarning: seoAnalyzer.getCriticalWarning(),
         };
     }
 }

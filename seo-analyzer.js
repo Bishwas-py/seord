@@ -5,23 +5,15 @@ const HtmlAnalyzer = require('./html-analyzer.js');
  * Class to analyze the SEO of a website.
  * @class
  */
-class SeoAnalyzer {
+export class SeoAnalyzer {
     /**
      * Constructor
-     * @param {string} keyword - The main keyword for the website
-     * @param {Array<string>} subKeywords - Array of sub keywords
-     * @param {HtmlAnalyzer} htmlAnalyzer - An instance of HtmlAnalyzer
-     * @param {?string} siteDomainName - Domain name of the website
-     * @param {string} languageCode - Default='en', Language of the website
-     * @param {string} countryCode - Default='us', Country code of the website
+     * @param {ContentJson} content - JSON object containing html content, main keyword, sub keywords, language code and country code
+     * @param {HtmlAnalyzer} htmlAnalyzer - HtmlAnalyzer object
      */
-    constructor(keyword, subKeywords, htmlAnalyzer, siteDomainName = null, languageCode = 'en', countryCode = 'us') {
-        this.keyword = keyword;
-        this.subKeywords = subKeywords;
+    constructor(content, htmlAnalyzer) {
+        this.content = content;
         this.htmlAnalyzer = htmlAnalyzer;
-        this.siteDomainName = siteDomainName;
-        this.languageCode = languageCode;
-        this.countryCode = countryCode;
         this.htmlDom = htmlAnalyzer.htmlDom;
     }
 
@@ -43,7 +35,7 @@ class SeoAnalyzer {
      * @returns {number} Keyword density
      */
     getKeywordDensity() {
-        const keywordCount = this.countOccurrences(this.keyword);
+        const keywordCount = this.countOccurrencesInBody(this.content.keyword);
         const bodyText = this.htmlDom('body').text();
         return this.calculateDensity(keywordCount, bodyText);
     }
@@ -54,8 +46,8 @@ class SeoAnalyzer {
      */
     getSubKeywordsDensity() {
         const densities = [];
-        for (const subKeyword of this.subKeywords) {
-            const subKeywordCount = this.countOccurrences(subKeyword);
+        for (const subKeyword of this.content.sub_keywords) {
+            const subKeywordCount = this.countOccurrencesInBody(subKeyword);
             const bodyText = this.htmlDom('body').text();
             densities.push({
                 keyword: subKeyword,
@@ -70,7 +62,7 @@ class SeoAnalyzer {
      * @param {string} keyword - The keyword to lookup
      * @returns {number} Count of occurrence
      */
-    countOccurrences(keyword) {
+    countOccurrencesInBody(keyword) {
         return this.htmlDom(`body:contains(${keyword})`).length;
     }
 
@@ -106,9 +98,31 @@ class SeoAnalyzer {
      */
     getWarnings() {
         const warnings = [];
-        if (this.getKeywordDensity() > 5.5) warnings.push('Keyword overstuffing.');
-        if (this.totalInternalLinks() < 100) warnings.push('Not enough internal links.');
-        if (this.totalExternalLinks() < 10) warnings.push('Not enough outbound links.');
+
+        let keywordDensity = this.getKeywordDensity();
+        const wordCount = this.htmlAnalyzer.getWordCount();
+
+        // warning for keyword density > 5.5%
+        if (keywordDensity > 5.5) warnings.push('Keyword density is too high.');
+
+        // warning for less internal links based on content length
+        if (this.totalInternalLinks() < (wordCount / 100)) {
+            warnings.push('Not enough internal links based on content length.');
+        }
+
+        // warning for less outbound links based on content length
+        if (this.totalExternalLinks() < (wordCount / 200)) {
+            warnings.push('Not enough outbound links based on content length.');
+        }
+
+        // checking keyword density for subKeywords
+        const subKeywordsDensity = this.getSubKeywordsDensity();
+        for (let i = 0; i < subKeywordsDensity.length; i++) {
+            if (subKeywordsDensity[i].density > 5.5) {
+                warnings.push(`The density of ${subKeywordsDensity[i].keyword} is too high.`);
+            }
+        }
+
         return warnings;
     }
 
@@ -128,13 +142,25 @@ class SeoAnalyzer {
      * Function to get SEO critical warnings
      * @returns {Array<string>} Array of critical warnings
      */
-    getCriticalsWarning() {
+    getCriticalWarning() {
         const criticalWarnings = [];
         if (this.getKeywordDensity() > 10) criticalWarnings.push('Serious keyword overstuffing.');
         if (this.htmlDom('title').text().length > 60) criticalWarnings.push('Title tag is too long.');
-        if (!this.htmlDom('meta[name="description"]').attr('content')) criticalWarnings.push('Missing meta description.');
+        if (!this.content.meta_description) criticalWarnings.push('Missing meta description.');
         return criticalWarnings;
     }
-}
 
-module.exports = SeoAnalyzer;
+    getKeywordInQuestion() {
+        const keyword = this.content.keyword;
+        const keywordCount = this.countOccurrencesInString(keyword, this.content.question);
+        const density = this.calculateDensity(keywordCount, this.content.question);
+        return {
+            keyword,
+            density
+        }
+    }
+
+    countOccurrencesInString(keyword, string) {
+        return string.split(keyword).length - 1;
+    }
+}
