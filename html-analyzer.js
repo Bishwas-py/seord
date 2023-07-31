@@ -1,6 +1,11 @@
 const cheerio = require('cheerio');
 
 /**
+ * @typedef {{ text: string, href: string }} Link
+ * @typedef {{all: Link[], duplicate: Link[], unique: Link[]}} LinkInfo
+*/
+
+/**
  * Class to analyze HTML content
  * @class
  */
@@ -15,25 +20,24 @@ class HtmlAnalyzer {
         this.siteDomainName = siteDomainName || '<unknown>';
     }
 
-    /**
-     * Function to get total number of links
-     * @returns {number} Total number of links
-     */
-    getTotalLinks() {
-        return this.htmlDom("a").length;
-    }
 
     /**
-     * Function to get total number of internal links
-     * @returns {number} Total number of internal links
+     * Function to get total number of external links
+     * @returns {Link[]} Array of external links
      */
-    getTotalInternalLinks() {
-        let internalLinksCount = 0;
+    getAllLinks() {
+        let allLinks = []
         this.htmlDom("a").each((index, element) => {
-            const href = this.htmlDom(element).attr('href');
-            this.isInternalLink(href) && internalLinksCount++;
+            let hrefElement = this.htmlDom(element);
+            const href = hrefElement.attr('href');
+            const text = hrefElement.text();
+
+            allLinks.push({
+                href,
+                text
+            });
         });
-        return internalLinksCount;
+        return allLinks;
     }
 
     isRelativeLink(href) {
@@ -60,18 +64,55 @@ class HtmlAnalyzer {
 
     /**
      * Function to get total number of outbound links
-     * @returns {number} Total number of outbound links
+     * @returns LinkInfo
      */
-    getTotalOutboundLinks() {
-        let outboundLinksCount = 0;
-        this.htmlDom("a").each((index, element) => {
-            const href = this.htmlDom(element).attr('href');
-            if (!this.isInternalLink(href)) {
-                outboundLinksCount++;
+    getOutboundLinks() {
+        let allOutboundLinks = []
+        let duplicateOutboundLinks = []
+        let uniqueOutboundLinks = []
+        this.getAllLinks().forEach((link) => {
+            if (!this.isInternalLink(link.href)) {
+                if (allOutboundLinks.find(l => l.href === link.href)) {
+                    duplicateOutboundLinks.push(link)
+                } else {
+                    uniqueOutboundLinks.push(link);
+                }
+                allOutboundLinks.push(link)
             }
         });
-        return outboundLinksCount;
+        return {
+            all: allOutboundLinks,
+            duplicate: duplicateOutboundLinks,
+            unique: uniqueOutboundLinks
+        }
     }
+
+
+    /**
+     * Function to get total number of internal links
+     * @returns LinkInfo
+     */
+    getInternalLinks() {
+        let allInternalLinks = [];
+        let duplicateInternalLinks = [];
+        let uniqueInternalLinks = []
+        this.getAllLinks().forEach((link) => {
+            if (this.isInternalLink(link.href)) {
+                if (allInternalLinks.find(l => l.href === link.href)) {
+                    duplicateInternalLinks.push(link)
+                } else {
+                    uniqueInternalLinks.push(link);
+                }
+                allInternalLinks.push(link)
+            }
+        });
+        return {
+            all: allInternalLinks,
+            duplicate: duplicateInternalLinks,
+            unique: uniqueInternalLinks
+        }
+    }
+
 
     getWordCount() {
         return this.htmlDom.text().split(' ').length;
