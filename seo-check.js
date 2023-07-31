@@ -9,7 +9,6 @@ const HtmlAnalyzer = require('./html-analyzer');
  *    keyword: string,
  *    sub_keywords: Array<string>,
  *    meta_description: string,
- *    meta_title: string,
  *    meta_keywords: string,
  *    language_code: string,
  *    country_code: string

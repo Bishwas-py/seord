@@ -44,16 +44,15 @@ fs.readFile('test.html', 'utf8' , (err, htmlContent) => {
     // Initialize SeoCheck with html content, main keyword and sub keywords
     const seoCheck = new SeoCheck(
         {
-            question: 'Are dark or light cigars better?',
+            question: 'What\'s the best insurance cover to get?',
             html_text: htmlContent,
-            keyword: 'cigars',
-            sub_keywords: ['turning 25', 'light cigars'],
-            meta_description: 'A comprehensive guide on choosing between dark and light cigars, highlighting the differences and helping readers make an informed decision.',
-            meta_title: 'Dark vs Light Cigars: A Comprehensive Guide',
+            keyword: 'best insurance cover',
+            sub_keywords: ['types of insurance', 'insurance coverage', 'insurance options'],
+            meta_description: 'Discover the best insurance cover to protect yourself and your loved ones. Explore different types of insurance and find the right coverage for your needs.',
             language_code: 'en',
             country_code: 'us'
         },
-        'cigarsniper.com'
+        'liveinabroad.com'
     );
 
     // Perform analysis
