@@ -33,7 +33,20 @@ class SeoCheck {
 
     /**
      * Function to perform SEO analysis
-     * @returns {Object} Object containing details of SEO analysis
+     * @returns {{
+     *     seoScore: number,
+     *     messages: SeoAnalyzerMessages,
+     *     keywordDensity: number,
+     *     subKeywordDensity: number,
+     *     totalLinks: number,
+     *     internalLinks: Link[],
+     *     outboundLinks: Link[],
+     *     questionSEO: {
+     *          subKeywordsWithQuestion: KeywordDensity[],
+     *          keywordWithQuestion: KeywordDensity
+     *      }
+     *    }}
+     *     Object containing SEO score, messages, keyword density, sub keyword density, total links, internal links, outbound links, sub keywords with question and keyword with question
      */
     analyzeSeo() {
         this.htmlAnalyzer = new HtmlAnalyzer(this.content.html_text, this.siteDomainName);

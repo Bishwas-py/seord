@@ -2,7 +2,7 @@
 
 # SEO Analyzer - Seord
 
-Seord is an advanced SEO Analyzer library that allows you to perform an SEO analysis on HTML content. Seord helps check the SEO friendliness of a website by looking at different factors such as keyword density, meta tags, and link analysis.
+Seord (pronounced "sword") is an advanced SEO Analyzer library that allows you to perform an SEO analysis on HTML content. Seord helps check the SEO friendliness of a website by looking at different factors such as keyword density, meta tags, and link analysis.
 
 ## Install
 
@@ -26,13 +26,15 @@ npm i seord
 First, require the library at the top of your file like so:
 
 ```javascript
-const SeoCheck = require('seord');
-const fs = require('fs');
+const SeoCheck = require('seord'); // Import SEOrd
 ```
 
 Next, you will need to set up the ContentJson and domain name before performing an SEO analysis. Here's an example:
 
 ```javascript
+const SeoCheck = require('seord');
+const fs = require('fs');
+
 fs.readFile('test.html', 'utf8' , (err, htmlContent) => {
     if (err) {
         console.error(err)
@@ -43,7 +45,7 @@ fs.readFile('test.html', 'utf8' , (err, htmlContent) => {
     const seoCheck = new SeoCheck(
         {
             question: 'Are dark or light cigars better?',
-            html_text: htmlContent, // HTML content is string
+            html_text: htmlContent,
             keyword: 'cigars',
             sub_keywords: ['turning 25', 'light cigars'],
             meta_description: 'A comprehensive guide on choosing between dark and light cigars, highlighting the differences and helping readers make an informed decision.',
@@ -58,7 +60,17 @@ fs.readFile('test.html', 'utf8' , (err, htmlContent) => {
     const result = seoCheck.analyzeSeo();
 
     // Print the result
-    console.log(JSON.stringify(result, null, 2));
+    console.log("Warnings: " + result.messages.warnings.length);
+    result.messages.warnings.forEach((warning) => {
+        console.log('  - ' + warning);
+    });
+
+    console.log("\nGood Points: " + result.messages.goodPoints.length);
+    result.messages.goodPoints.forEach((error) => {
+        console.log('  - ' + error);
+    });
+
+    console.log("\nSEO Score: " + result.seoScore);
 })
 ```
 

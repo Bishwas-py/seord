@@ -1,4 +1,8 @@
 /**
+ * @typedef {{warnings: Array<string>, goodPoints: Array<string>}} SeoAnalyzerMessages
+ * @typedef {{keyword: string, density: number}} KeywordDensity
+ */
+/**
  * Class to analyze the SEO of a website.
  * @class
  */
@@ -17,15 +21,6 @@ class SeoAnalyzer {
         this.htmlAnalyzer = htmlAnalyzer;
         this.htmlDom = htmlAnalyzer.htmlDom;
         this.bodyText = this.htmlDom.text().toLowerCase();
-    }
-
-    /**
-     * Function to get the SEO score
-     * @returns {number} SEO score
-     */
-    getSeoScore() {
-        let score = 0;
-
     }
 
 
@@ -95,6 +90,17 @@ class SeoAnalyzer {
         let keywordDensity = this.getKeywordDensity();
         const wordCount = this.htmlAnalyzer.getWordCount();
 
+        if (this.content.keyword) {
+            goodPoints.push(`Your main keyword is "${this.content.keyword}".`);
+        } else {
+            warnings.push('Missing main keyword.');
+        }
+
+        if (this.content.sub_keywords.length > 0) {
+            goodPoints.push(`Your sub keywords are "${this.content.sub_keywords.join('", "')}".`);
+        } else {
+            warnings.push('Missing sub keywords.');
+        }
         // warning for keyword density too high or too low based on content length
         if (keywordDensity < this.MINIMUM_KEYWORD_DENSITY) {
             warnings.push(`Keyword density is too low. It is ${keywordDensity.toFixed(2)}%, try increasing it.`)
@@ -102,6 +108,33 @@ class SeoAnalyzer {
             warnings.push(`Keyword density is too high. It is ${keywordDensity.toFixed(2)}%, try decreasing it.`)
         } else {
             goodPoints.push(`Keyword density is ${keywordDensity.toFixed(2)}%.`);
+        }
+
+
+        // checking keyword density for subKeywords
+        const subKeywordsDensity = this.getSubKeywordsDensity();
+        subKeywordsDensity.forEach((subKeywordDensity) => {
+            if (subKeywordDensity.density > 3) {
+                warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is too high, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
+            } else if (subKeywordDensity.density < 0.3) {
+                let densityBeingLowString = subKeywordDensity.density < 0.2 ? 'too low' : 'low';
+                warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${ densityBeingLowString }, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
+            } else {
+                goodPoints.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${subKeywordDensity.density.toFixed(2)}%.`);
+            }
+        });
+
+
+        if (this.getKeywordInQuestion()) {
+            goodPoints.push(`You have your main keyword in question.`);
+        } else {
+            warnings.push('No main keyword in question.');
+        }
+
+        if (this.getSubKeywordsInQuestion().length > 0) {
+            goodPoints.push(`You have ${this.getSubKeywordsInQuestion().length} sub keywords in question.`);
+        } else {
+            warnings.push('No sub keywords in question.');
         }
 
         // warning for less internal links based on content length
@@ -134,19 +167,6 @@ class SeoAnalyzer {
         if (this.htmlDom('title').text().length > 60) warnings.push('Title tag is too long.');
         if (!this.content.meta_description) warnings.push('Missing meta description.');
 
-        // checking keyword density for subKeywords
-        const subKeywordsDensity = this.getSubKeywordsDensity();
-        subKeywordsDensity.forEach((subKeywordDensity) => {
-            if (subKeywordDensity.density > 3) {
-                warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is too high, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
-            } else if (subKeywordDensity.density < 0.3) {
-                let densityBeingLowString = subKeywordDensity.density < 0.2 ? 'too low' : 'low';
-                warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${ densityBeingLowString }, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
-            } else {
-                goodPoints.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${subKeywordDensity.density.toFixed(2)}%.`);
-            }
-        })
-
         return {warnings, goodPoints};
     }
 
@@ -171,6 +191,19 @@ class SeoAnalyzer {
 
     countOccurrencesInString(keyword, string) {
         return string.split(keyword).length - 1;
+    }
+
+
+
+    /**
+     * Function to get the SEO score; based on different factors
+     * @returns {number} SEO score
+     */
+    getSeoScore() {
+        const MAX_SCORE = 100;
+        const { warnings, goodPoints } = this.getMessages();
+         const messagesScore = ((goodPoints.length) / (warnings.length + goodPoints.length)) * 100;
+        return Math.min(messagesScore, MAX_SCORE); // SEO score should never go above 100
     }
 }
 
