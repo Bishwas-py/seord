@@ -1,7 +1,6 @@
 
-import { SeoAnalyzer } from 'seo-analyzer';
-import { HtmlAnalyzer } from 'html-analyzer';
-import {ContentJson} from "index";
+import { SeoAnalyzer } from './seo-analyzer';
+import { HtmlAnalyzer } from './html-analyzer';
 
 export class SeoCheck {
     public content: ContentJson;
@@ -22,6 +21,7 @@ export class SeoCheck {
     analyzeSeo() {
         return {
             seoScore: this.seoAnalyzer.getSeoScore(),
+            keywordSeoScore: this.seoAnalyzer.getKeywordSeoScore(),
             messages: this.seoAnalyzer.getMessages(),
             keywordDensity: this.seoAnalyzer.getKeywordDensity(),
             subKeywordDensity: this.seoAnalyzer.getSubKeywordsDensity(),

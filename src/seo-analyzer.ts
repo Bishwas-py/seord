@@ -1,5 +1,4 @@
-import type {ContentJson, KeywordDensity} from "index";
-import type {HtmlAnalyzer} from "html-analyzer";
+import type {HtmlAnalyzer} from "./html-analyzer";
 
 export class SeoAnalyzer {
 
@@ -159,7 +158,7 @@ export class SeoAnalyzer {
         return subKeywordsInQuestion;
     }
 
-    countOccurrencesInString(keyword, string): number {
+    countOccurrencesInString(keyword: string, string: string): number {
         return string.split(keyword).length - 1;
     }
 

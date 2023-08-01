@@ -1,5 +1,4 @@
 import {type CheerioAPI, load} from "cheerio";
-import {Link, LinksGroup} from "./types";
 
 /**
  * Class to analyze HTML content
