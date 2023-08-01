@@ -10,9 +10,8 @@ import { HtmlAnalyzer } from './html-analyzer.js';
  *    keyword: string,
  *    sub_keywords: Array<string>,
  *    meta_description: string,
- *    meta_keywords: string,
- *    language_code: string,
- *    country_code: string
+ *    language_code: string|null,
+ *    country_code: string|null
  *    }} ContentJson
  */
 
