@@ -1,5 +1,4 @@
-const cheerio = require('cheerio');
-
+import * as cheerio from 'cheerio';
 /**
  * @typedef {{ text: string, href: string }} Link
  * @typedef {{all: Link[], duplicate: Link[], unique: Link[]}} LinkInfo
@@ -9,7 +8,7 @@ const cheerio = require('cheerio');
  * Class to analyze HTML content
  * @class
  */
-class HtmlAnalyzer {
+export class HtmlAnalyzer {
     /**
      * Constructor
      * @param {string} htmlContent - The HTML content to be analyzed
@@ -118,5 +117,3 @@ class HtmlAnalyzer {
         return this.htmlDom.text().split(' ').length;
     }
 }
-
-module.exports = HtmlAnalyzer;

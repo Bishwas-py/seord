@@ -6,7 +6,7 @@
  * Class to analyze the SEO of a website.
  * @class
  */
-class SeoAnalyzer {
+export class SeoAnalyzer {
 
     MINIMUM_KEYWORD_DENSITY = 0.5
     MAXIMUM_KEYWORD_DENSITY = 5
@@ -207,4 +207,3 @@ class SeoAnalyzer {
     }
 }
 
-module.exports = SeoAnalyzer;

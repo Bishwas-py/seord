@@ -1,5 +1,6 @@
-const SeoAnalyzer = require('./seo-analyzer');
-const HtmlAnalyzer = require('./html-analyzer');
+
+import { SeoAnalyzer } from './seo-analyzer.js';
+import { HtmlAnalyzer } from './html-analyzer.js';
 
 /**
  * Class to perform SEO check of a website
@@ -19,7 +20,7 @@ const HtmlAnalyzer = require('./html-analyzer');
  * Class to perform SEO check of a website
  * @class
  */
-class SeoCheck {
+export class SeoCheck {
     /**
      * Constructor
      * @param {ContentJson} contentJson - JSON object containing html content, main keyword, sub keywords, language code and country code
@@ -69,5 +70,3 @@ class SeoCheck {
         };
     }
 }
-
-module.exports = SeoCheck;

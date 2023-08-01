@@ -1,1 +1,2 @@
-module.exports = require('seord/seo-check');
+import {SeoCheck} from './seo-check.js';
+export {SeoCheck};
