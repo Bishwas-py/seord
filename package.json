@@ -1,21 +1,17 @@
 {
   "name": "seord",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Advanced SEO Analyzer",
-
-
   "type": "module",
-  "main": "index.js",
-
+  "main": "index.ts",
+  "types": "index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Bishwas-py/seord.git"
   },
-
   "keywords": [
     "seo",
     "seo",
@@ -26,14 +22,14 @@
   ],
   "author": "bishwas bhandari",
   "license": "MIT",
-
   "bugs": {
     "url": "https://github.com/Bishwas-py/seord/issues"
   },
   "homepage": "https://github.com/Bishwas-py/seord#readme",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6"
   }
-
 }
-

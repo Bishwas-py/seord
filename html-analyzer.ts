@@ -1,35 +1,26 @@
-import * as cheerio from 'cheerio';
-/**
- * @typedef {{ text: string, href: string }} Link
- * @typedef {{all: Link[], duplicate: Link[], unique: Link[]}} LinkInfo
-*/
+import {type CheerioAPI, load} from "cheerio";
+import {Link, LinksGroup} from "./types";
 
 /**
  * Class to analyze HTML content
  * @class
  */
 export class HtmlAnalyzer {
-    /**
-     * Constructor
-     * @param {string} htmlContent - The HTML content to be analyzed
-     * @param {?string} siteDomainName - Domain name of the website
-     */
-    constructor(htmlContent, siteDomainName) {
-        this.htmlDom = cheerio.load(htmlContent);
-        this.siteDomainName = siteDomainName || '<unknown>';
+    public htmlDom:  CheerioAPI;
+    public siteDomainName: string|null;
+
+    constructor(htmlContent: string, siteDomainName: string | null = null) {
+        this.htmlDom = load(htmlContent);
+        this.siteDomainName = siteDomainName;
     }
 
 
-    /**
-     * Function to get total number of external links
-     * @returns {Link[]} Array of external links
-     */
-    getAllLinks() {
-        let allLinks = []
-        this.htmlDom("a").each((index, element) => {
+    getAllLinks(): Link[] {
+        let allLinks: Link[] = []
+        this.htmlDom("a").each((index: number, element) => {
             let hrefElement = this.htmlDom(element);
-            const href = hrefElement.attr('href');
-            const text = hrefElement.text();
+            const href = hrefElement.attr('href') as string;
+            const text = hrefElement.text() as string;
 
             allLinks.push({
                 href,
@@ -39,36 +30,28 @@ export class HtmlAnalyzer {
         return allLinks;
     }
 
-    isRelativeLink(href) {
+    isRelativeLink(href: string): boolean {
         return href.startsWith('./') || href.startsWith('../') || href.startsWith('/') || href.startsWith('#');
     }
 
-    startAsAbsoluteLink(href) {
+    startAsAbsoluteLink(href: string): boolean {
         return href.startsWith('http://') || href.startsWith('https://');
     }
 
-    isMailToLink(href) {
+    isMailToLink(href: string): boolean {
         return href.startsWith('mailto:');
     }
 
 
-    /**
-     * Function to check if the link is internal or not
-     * @param href
-     * @returns {*|boolean}
-     */
-    isInternalLink(href) {
-        return (href.includes(this.siteDomainName) && this.startAsAbsoluteLink(href)) || this.isRelativeLink(href) && !this.isMailToLink(href);
+    isInternalLink(href: string): boolean {
+        return (this.siteDomainName && href.includes(this.siteDomainName) && this.startAsAbsoluteLink(href)) || this.isRelativeLink(href) && !this.isMailToLink(href);
     }
 
-    /**
-     * Function to get total number of outbound links
-     * @returns LinkInfo
-     */
-    getOutboundLinks() {
-        let allOutboundLinks = []
-        let duplicateOutboundLinks = []
-        let uniqueOutboundLinks = []
+
+    getOutboundLinks(): LinksGroup {
+        let allOutboundLinks = [] as Link[];
+        let duplicateOutboundLinks = [] as Link[];
+        let uniqueOutboundLinks = [] as Link[];
         this.getAllLinks().forEach((link) => {
             if (!this.isInternalLink(link.href)) {
                 if (allOutboundLinks.find(l => l.href === link.href)) {
@@ -87,14 +70,10 @@ export class HtmlAnalyzer {
     }
 
 
-    /**
-     * Function to get total number of internal links
-     * @returns LinkInfo
-     */
-    getInternalLinks() {
-        let allInternalLinks = [];
-        let duplicateInternalLinks = [];
-        let uniqueInternalLinks = []
+    getInternalLinks(): LinksGroup {
+        let allInternalLinks = [] as Link[];
+        let duplicateInternalLinks = [] as Link[];
+        let uniqueInternalLinks = [] as Link[];
         this.getAllLinks().forEach((link) => {
             if (this.isInternalLink(link.href)) {
                 if (allInternalLinks.find(l => l.href === link.href)) {
@@ -113,7 +92,7 @@ export class HtmlAnalyzer {
     }
 
 
-    getWordCount() {
+    getWordCount(): number {
         return this.htmlDom.text().split(' ').length;
     }
 }

@@ -1,22 +1,17 @@
-/**
- * @typedef {{warnings: Array<string>, goodPoints: Array<string>}} SeoAnalyzerMessages
- * @typedef {{keyword: string, density: number}} KeywordDensity
- */
-/**
- * Class to analyze the SEO of a website.
- * @class
- */
+import type {ContentJson, KeywordDensity} from "index";
+import type {HtmlAnalyzer} from "html-analyzer";
+
 export class SeoAnalyzer {
 
     MINIMUM_KEYWORD_DENSITY = 0.5
     MAXIMUM_KEYWORD_DENSITY = 5
 
-    /**
-     * Constructor
-     * @param {ContentJson} content - JSON object containing html content, main keyword, sub keywords, language code and country code
-     * @param {HtmlAnalyzer} htmlAnalyzer - HtmlAnalyzer object
-     */
-    constructor(content, htmlAnalyzer) {
+    public content: ContentJson;
+    public htmlAnalyzer: HtmlAnalyzer;
+    public htmlDom: HtmlAnalyzer['htmlDom'];
+    public bodyText: string;
+
+    constructor(content: ContentJson, htmlAnalyzer: HtmlAnalyzer) {
         this.content = content;
         this.htmlAnalyzer = htmlAnalyzer;
         this.htmlDom = htmlAnalyzer.htmlDom;
@@ -24,14 +19,10 @@ export class SeoAnalyzer {
     }
 
 
-    /**
-     * Function to get sub keyword density
-     * @returns {Array<{ keyword: string, density: number }>} Array of keyword and its density
-     */
-    getSubKeywordsDensity() {
-        const densities = [];
+    getSubKeywordsDensity(): KeywordDensity[] {
+        const densities: KeywordDensity[] = [];
         for (const subKeyword of this.content.sub_keywords) {
-            let data = {
+            let data: KeywordDensity = {
                 keyword: subKeyword,
                 density: this.calculateDensity(subKeyword)
             }
@@ -40,13 +31,8 @@ export class SeoAnalyzer {
         return densities;
     }
 
-    /**
-     * Function to calculate the density of a keyword
-     * @param {null} keyword - Count of the keyword
-     * @param {string, null} bodyText - The text to lookup
-     * @returns {number} Density of keyword
-     */
-    calculateDensity(keyword, bodyText= null) {
+
+    calculateDensity(keyword: string, bodyText: string | null = null): number {
         if (!bodyText) {
             bodyText = this.bodyText;
         }
@@ -54,38 +40,22 @@ export class SeoAnalyzer {
         return (keywordCount / bodyText.split(' ').length) * 100;
     }
 
-    /**
-     * Function to get keyword density
-     * @returns {number} Keyword density
-     */
-    getKeywordDensity() {
+    getKeywordDensity(): number {
         return this.calculateDensity(this.content.keyword);
     }
 
 
-    /**
-     * Function to get total internal links count
-     * @returns {number} Total internal links count
-     */
-    totalUniqueInternalLinksCount() {
+    totalUniqueInternalLinksCount(): number {
         return this.htmlAnalyzer.getInternalLinks().unique.length;
     }
 
-    /**
-     * Function to get total outbound links count
-     * @returns {number} Total outbound links count
-     */
-    totalUniqueExternalLinksCount() {
+    totalUniqueExternalLinksCount(): number {
         return this.htmlAnalyzer.getOutboundLinks().unique.length;
     }
 
-    /**
-     * Function to get SEO warnings
-     * @returns {{warnings: Array<string>, goodPoints: Array<string>}} Object containing warnings and good points
-     */
     getMessages() {
-        const warnings = [];
-        const goodPoints = [];
+        const warnings: string[] = [];
+        const goodPoints: string[] = [];
 
         let keywordDensity = this.getKeywordDensity();
         const wordCount = this.htmlAnalyzer.getWordCount();
@@ -118,7 +88,7 @@ export class SeoAnalyzer {
                 warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is too high, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
             } else if (subKeywordDensity.density < 0.3) {
                 let densityBeingLowString = subKeywordDensity.density < 0.2 ? 'too low' : 'low';
-                warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${ densityBeingLowString }, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
+                warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${densityBeingLowString}, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
             } else {
                 goodPoints.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${subKeywordDensity.density.toFixed(2)}%.`);
             }
@@ -170,40 +140,51 @@ export class SeoAnalyzer {
         return {warnings, goodPoints};
     }
 
-    getKeywordInQuestion(keyword = null) {
-        if (!keyword) {
-            keyword = this.content.keyword
+    getKeywordInQuestion(keyword: string|null = null): KeywordDensity {
+        if (keyword === null) {
+            keyword = this.content.keyword as string;
         }
         const density = this.calculateDensity(keyword, this.content.question);
         return {
             keyword,
             density
-        }
+        } as KeywordDensity;
     }
 
-    getSubKeywordsInQuestion() {
-        let subKeywordsInQuestion = []
-        this.content.sub_keywords.forEach((sub_keyword) => {
+    getSubKeywordsInQuestion(): KeywordDensity[] {
+        let subKeywordsInQuestion: KeywordDensity[] = []
+        this.content.sub_keywords.forEach((sub_keyword: string) => {
             subKeywordsInQuestion.push(this.getKeywordInQuestion(sub_keyword));
         })
         return subKeywordsInQuestion;
     }
 
-    countOccurrencesInString(keyword, string) {
+    countOccurrencesInString(keyword, string): number {
         return string.split(keyword).length - 1;
     }
 
 
-
-    /**
-     * Function to get the SEO score; based on different factors
-     * @returns {number} SEO score
-     */
-    getSeoScore() {
+    getSeoScore(): number {
         const MAX_SCORE = 100;
-        const { warnings, goodPoints } = this.getMessages();
-         const messagesScore = ((goodPoints.length) / (warnings.length + goodPoints.length)) * 100;
+        const {warnings, goodPoints} = this.getMessages();
+        const messagesScore = ((goodPoints.length) / (warnings.length + goodPoints.length)) * 100;
         return Math.min(messagesScore, MAX_SCORE); // SEO score should never go above 100
+    }
+
+    getKeywordSeoScore(): number {
+        const MAX_SCORE = 100;
+        const keywordDensity = this.getKeywordDensity();
+        const keywordInQuestion = this.getKeywordInQuestion();
+        const subKeywordsInQuestion = this.getSubKeywordsInQuestion();
+        const subKeywordsDensity = this.getSubKeywordsDensity();
+        const keywordInQuestionScore = keywordInQuestion.density * 10;
+        const subKeywordsInQuestionScore = subKeywordsInQuestion.length * 10;
+        const subKeywordsDensityScore = subKeywordsDensity.reduce((total, subKeywordDensity) => {
+            return total + (subKeywordDensity.density * 10);
+        }, 0);
+        const keywordDensityScore = keywordDensity * 10;
+        const totalScore = keywordInQuestionScore + subKeywordsInQuestionScore + subKeywordsDensityScore + keywordDensityScore;
+        return Math.min(totalScore, MAX_SCORE); // SEO score should never go above 100
     }
 }
 
