@@ -11,9 +11,25 @@ interface ContentJson {
     countryCode: string
 }
 
+interface SeoData {
+    seoScore: number,
+    keywordSeoScore: number,
+    messages: { warnings: string[], goodPoints: string[] },
+    keywordDensity: number,
+    subKeywordDensity: KeywordDensity[],
+    totalLinks: number,
+    internalLinks: LinksGroup,
+    outboundLinks: LinksGroup,
+    questionSEO: {
+        subKeywordsWithQuestion: KeywordDensity[],
+        keywordWithQuestion: KeywordDensity
+    }
+}
+
 export {
     Link,
     LinksGroup,
     KeywordDensity,
-    ContentJson
+    ContentJson,
+    SeoData
 }

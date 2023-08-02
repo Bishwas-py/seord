@@ -1,13 +1,16 @@
-## README.md
-
 # SEO Analyzer - SEOrd
 
-SEOrd (pronounced "sword") is an advanced SEO Analyzer library that allows you to perform an SEO analysis on HTML content. SEOrd helps check the SEO friendliness of a website by looking at different factors such as keyword density, meta tags, and link analysis.
+SEOrd `(pronounced "sword")` is an advanced SEO Analyzer library that allows you to perform an SEO analysis
+on HTML content. SEOrd helps check the SEO friendliness of a website by looking at different factors such
+as keyword density, meta description, and link analysis `(internal and external link)`.
+
+I created this library because I had a hard time finding a good SEO analyzer library that can be used
+in `Node.js`. I hope this library will help you as well.
 
 ## Install
 
 ```
-npm i SEOrd
+npm i seord
 ```
 
 ## Features
@@ -16,24 +19,25 @@ npm i SEOrd
 - Sub Keywords Density Analysis
 - SEO Messages: Get warnings and good points related to SEO.
 - Checks for Internal and Outbound Links
-- Checks for Duplicate Links
+- Checks for Duplicate Links and Unique Links; both Internal and Outbound
 - Checks for Keyword Placement within a given question
 - SEO Score Analysis
-
+- Key SEO Score Analysis
 
 ## Usage
 
 First, require the library at the top of your file like so:
 
 ```javascript
-import {SeoCheck} from "SEOrd";
+import {SeoCheck} from "seord";
 ```
 
-Next, you will need to set up the ContentJson and domain name before performing an SEO analysis. Here's an example:
+Next, you will need to set up the ContentJson and domain name before performing an 
+SEO analysis. Here's an example:
 
 ```javascript
-import {readFile} from 'fs';
-import {SeoCheck} from "SEOrd";
+import {SeoCheck} from "seord";
+import {readFile} from 'fs'; // Only for this example
 
 readFile('test.html', 'utf8' , (err, htmlContent) => {
     if (err) {
@@ -74,7 +78,11 @@ readFile('test.html', 'utf8' , (err, htmlContent) => {
 })
 ```
 
-Result will be:
+I am using the `readFile` function from the `fs` module to read the HTML content from a file.
+You can use any method to get the HTML content, or you can just pass the HTML content directly
+as `string`.
+
+The result of the above example will be:
 ```text
 Warnings: 3
   - The density of sub keyword "insurance options" is too low, i.e. 0.08%.
@@ -96,9 +104,12 @@ SEO Score: 75
 Keyword SEO Score: 100
 ```
 
-Data returned: 
+The data returned by the `analyzeSeo` function is in the following format:
+
 ```typescript
-interface DataReturned {
+import type {KeywordDensity, LinksGroup} from "seord";
+
+interface SeoData {
     seoScore: number,
     keywordSeoScore: number,
     messages: { warnings: string[], goodPoints: string[] },
@@ -107,12 +118,13 @@ interface DataReturned {
     totalLinks: number,
     internalLinks: LinksGroup,
     outboundLinks: LinksGroup,
-    questionSEO: {}
+    questionSEO: {
+        subKeywordsWithQuestion: KeywordDensity[],
+        keywordWithQuestion: KeywordDensity
+    }
 }
 ```
-> You do not need TypeScript to use this library. I'm just making the format of data to be returned in this format.
-
-When you run the above example SEOrd will analyze the HTML content, providing you with an SEO score and detailed information about various aspects of the content's SEO.
+> You do not need TypeScript to use this library. The above is just to show the data structure.
 
 ## Issue Reporting
 
@@ -120,7 +132,7 @@ If you have [found a bug](https://github.com/Bishwas-py/seord/issues) or if you 
 
 ## Contributing
 
-In lieu of a formal style guide, take care to maintain the existing coding style.
+Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given.
 
 ## License
 

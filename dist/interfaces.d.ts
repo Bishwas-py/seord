@@ -20,4 +20,21 @@ interface ContentJson {
     languageCode: string;
     countryCode: string;
 }
-export { Link, LinksGroup, KeywordDensity, ContentJson };
+interface SeoData {
+    seoScore: number;
+    keywordSeoScore: number;
+    messages: {
+        warnings: string[];
+        goodPoints: string[];
+    };
+    keywordDensity: number;
+    subKeywordDensity: KeywordDensity[];
+    totalLinks: number;
+    internalLinks: LinksGroup;
+    outboundLinks: LinksGroup;
+    questionSEO: {
+        subKeywordsWithQuestion: KeywordDensity[];
+        keywordWithQuestion: KeywordDensity;
+    };
+}
+export { Link, LinksGroup, KeywordDensity, ContentJson, SeoData };
