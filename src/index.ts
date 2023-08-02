@@ -1,2 +1,2 @@
 import {SeoCheck} from './seo-check';
-export default SeoCheck;
+export {SeoCheck};

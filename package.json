@@ -1,10 +1,9 @@
 {
   "name": "seord",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Advanced SEO Analyzer",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
@@ -17,10 +16,11 @@
   ],
   "author": "bishwas bhandari",
   "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.4.5",
+    "typescript": "^5.1.6"
+  },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12"
-  },
-  "devDependencies": {
-    "typescript": "^5.1.6"
   }
 }

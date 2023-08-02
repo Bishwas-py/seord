@@ -1,24 +1,15 @@
-
-import { SeoAnalyzer } from './seo-analyzer';
-import { HtmlAnalyzer } from './html-analyzer';
-import {ContentJson} from "./interfaces";
-
-export class SeoCheck {
-    public content: ContentJson;
-    public siteDomainName: string|null;
-    public htmlAnalyzer: HtmlAnalyzer;
-    public seoAnalyzer: SeoAnalyzer;
-
-    constructor(contentJson: ContentJson, siteDomainName: string|null = null) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SeoCheck = void 0;
+const seo_analyzer_1 = require("./seo-analyzer");
+const html_analyzer_1 = require("./html-analyzer");
+class SeoCheck {
+    constructor(contentJson, siteDomainName = null) {
         this.content = contentJson;
         this.siteDomainName = siteDomainName;
-        this.htmlAnalyzer = new HtmlAnalyzer(this.content.htmlText, this.siteDomainName);
-        this.seoAnalyzer = new SeoAnalyzer(
-            this.content,
-            this.htmlAnalyzer
-        );
+        this.htmlAnalyzer = new html_analyzer_1.HtmlAnalyzer(this.content.htmlText, this.siteDomainName);
+        this.seoAnalyzer = new seo_analyzer_1.SeoAnalyzer(this.content, this.htmlAnalyzer);
     }
-
     analyzeSeo() {
         return {
             seoScore: this.seoAnalyzer.getSeoScore(),
@@ -36,3 +27,5 @@ export class SeoCheck {
         };
     }
 }
+exports.SeoCheck = SeoCheck;
+//# sourceMappingURL=seo-check.js.map

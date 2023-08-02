@@ -4,11 +4,11 @@ interface KeywordDensity { keyword: string, density: number }
 interface ContentJson {
     question: string,
     keyword: string,
-    sub_keywords: string[],
-    html_text: string,
-    meta_description: string,
-    language_code: string,
-    country_code: string
+    subKeywords: string[],
+    htmlText: string,
+    metaDescription: string,
+    languageCode: string,
+    countryCode: string
 }
 
 export {
