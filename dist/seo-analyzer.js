@@ -124,6 +124,7 @@ class SeoAnalyzer {
         return { warnings, goodPoints };
     }
     getKeywordInTitle(keyword = null) {
+        var _a;
         if (keyword === null) {
             keyword = this.content.keyword;
         }
@@ -131,7 +132,7 @@ class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: 2
+            position: (_a = this.content.title) === null || _a === void 0 ? void 0 : _a.indexOf(keyword)
         };
     }
     getSubKeywordsInTitle() {

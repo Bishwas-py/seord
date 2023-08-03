@@ -79,8 +79,13 @@ class HtmlAnalyzer {
         };
     }
     getWordCount(stringContent = null) {
-        console.log(stringContent);
-        return 7;
+        if (!stringContent) {
+            stringContent = this.htmlDom.text().toLowerCase();
+        }
+        else {
+            stringContent = stringContent.toLowerCase();
+        }
+        return stringContent.split(' ').length;
     }
 }
 exports.HtmlAnalyzer = HtmlAnalyzer;
