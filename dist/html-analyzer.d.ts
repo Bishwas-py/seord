@@ -7,6 +7,7 @@ import type { Link, LinksGroup } from "./interfaces";
 export declare class HtmlAnalyzer {
     htmlDom: CheerioAPI;
     siteDomainName: string | null;
+    bodyText: string;
     constructor(htmlContent: string, siteDomainName?: string | null);
     getAllLinks(): Link[];
     isRelativeLink(href: string): boolean;
@@ -15,5 +16,6 @@ export declare class HtmlAnalyzer {
     isInternalLink(href: string): boolean;
     getOutboundLinks(): LinksGroup;
     getInternalLinks(): LinksGroup;
+    getPureText(stringContent: string): string;
     getWordCount(stringContent?: string | null): number;
 }

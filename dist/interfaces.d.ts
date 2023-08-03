@@ -23,10 +23,13 @@ interface ContentJson {
 }
 interface SeoData {
     seoScore: number;
+    wordCount: number;
     keywordSeoScore: number;
+    keywordFrequency: number;
     messages: {
         warnings: string[];
         goodPoints: string[];
+        minorWarnings: string[];
     };
     keywordDensity: number;
     subKeywordDensity: KeywordDensity[];
@@ -36,6 +39,7 @@ interface SeoData {
     titleSEO: {
         subKeywordsWithTitle: KeywordDensity[];
         keywordWithTitle: KeywordDensity;
+        wordCount: number;
     };
 }
 export { Link, LinksGroup, KeywordDensity, ContentJson, SeoData };

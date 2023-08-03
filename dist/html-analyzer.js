@@ -10,6 +10,7 @@ class HtmlAnalyzer {
     constructor(htmlContent, siteDomainName = null) {
         this.htmlDom = (0, cheerio_1.load)(htmlContent);
         this.siteDomainName = siteDomainName;
+        this.bodyText = this.htmlDom.text().toLowerCase();
     }
     getAllLinks() {
         let allLinks = [];
@@ -78,15 +79,13 @@ class HtmlAnalyzer {
             unique: uniqueInternalLinks
         };
     }
-    getWordCount(stringContent = null) {
-        if (!stringContent) {
-            stringContent = this.htmlDom.text().toLowerCase();
-        }
-        else {
-            stringContent = stringContent.toLowerCase();
-        }
+    getPureText(stringContent) {
         let gapSpaceRegex = /\s+/gi;
-        return stringContent.trim().replace(gapSpaceRegex, ' ').split(' ').length;
+        return stringContent.trim().replace(gapSpaceRegex, ' ');
+    }
+    getWordCount(stringContent = null) {
+        stringContent = stringContent ? stringContent.toLowerCase() : this.htmlDom.text().toLowerCase();
+        return this.getPureText(stringContent).split(' ').length;
     }
 }
 exports.HtmlAnalyzer = HtmlAnalyzer;
