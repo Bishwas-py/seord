@@ -15,5 +15,5 @@ export declare class HtmlAnalyzer {
     isInternalLink(href: string): boolean;
     getOutboundLinks(): LinksGroup;
     getInternalLinks(): LinksGroup;
-    getWordCount(): number;
+    getWordCount(stringContent?: string | null): number;
 }

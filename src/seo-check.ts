@@ -29,9 +29,9 @@ export class SeoCheck {
             totalLinks: this.htmlAnalyzer.getAllLinks().length,
             internalLinks: this.htmlAnalyzer.getInternalLinks(),
             outboundLinks: this.htmlAnalyzer.getOutboundLinks(),
-            questionSEO: {
-                subKeywordsWithQuestion: this.seoAnalyzer.getSubKeywordsInQuestion(),
-                keywordWithQuestion: this.seoAnalyzer.getKeywordInQuestion(),
+            titleSEO: {
+                subKeywordsWithTitle: this.seoAnalyzer.getSubKeywordsInTitle(),
+                keywordWithTitle: this.seoAnalyzer.getKeywordInTitle(),
             }
         };
     }

@@ -6,8 +6,8 @@ import type {Link, LinksGroup} from "./interfaces";
  * @class
  */
 export class HtmlAnalyzer {
-    public htmlDom:  CheerioAPI;
-    public siteDomainName: string|null;
+    public htmlDom: CheerioAPI;
+    public siteDomainName: string | null;
 
     constructor(htmlContent: string, siteDomainName: string | null = null) {
         this.htmlDom = load(htmlContent);
@@ -92,7 +92,12 @@ export class HtmlAnalyzer {
     }
 
 
-    getWordCount(): number {
-        return this.htmlDom.text().split(' ').length;
+     getWordCount(stringContent: string | null = null): number {
+        if (!stringContent) {
+            stringContent = this.htmlDom.text().toLowerCase();
+        } else {
+            stringContent = stringContent.toLowerCase();
+        }
+        return stringContent.split(' ').length;
     }
 }

@@ -95,14 +95,14 @@ export class SeoAnalyzer {
         });
 
 
-        if (this.getKeywordInQuestion()) {
+        if (this.getKeywordInTitle()) {
             goodPoints.push(`You have your main keyword in question.`);
         } else {
             warnings.push('No main keyword in question.');
         }
 
-        if (this.getSubKeywordsInQuestion().length > 0) {
-            goodPoints.push(`You have ${this.getSubKeywordsInQuestion().length} sub keywords in question.`);
+        if (this.getSubKeywordsInTitle().length > 0) {
+            goodPoints.push(`You have ${this.getSubKeywordsInTitle().length} sub keywords in question.`);
         } else {
             warnings.push('No sub keywords in question.');
         }
@@ -140,27 +140,28 @@ export class SeoAnalyzer {
         return {warnings, goodPoints};
     }
 
-    getKeywordInQuestion(keyword: string|null = null): KeywordDensity {
+    getKeywordInTitle(keyword: string|null = null): KeywordDensity {
         if (keyword === null) {
             keyword = this.content.keyword as string;
         }
-        const density = this.calculateDensity(keyword, this.content.question);
+        const density = this.calculateDensity(keyword, this.content.title);
         return {
             keyword,
-            density
+            density,
+            position: this.content.title?.indexOf(keyword)
         } as KeywordDensity;
     }
 
-    getSubKeywordsInQuestion(): KeywordDensity[] {
+    getSubKeywordsInTitle(): KeywordDensity[] {
         let subKeywordsInQuestion: KeywordDensity[] = []
         this.content.subKeywords.forEach((sub_keyword: string) => {
-            subKeywordsInQuestion.push(this.getKeywordInQuestion(sub_keyword));
+            subKeywordsInQuestion.push(this.getKeywordInTitle(sub_keyword));
         })
         return subKeywordsInQuestion;
     }
 
-    countOccurrencesInString(keyword: string, string: string): number {
-        return string.split(keyword).length - 1;
+    countOccurrencesInString(keyword: string, stringContent: string): number {
+        return stringContent.split(keyword).length - 1;
     }
 
 
@@ -174,8 +175,8 @@ export class SeoAnalyzer {
     getKeywordSeoScore(): number {
         const MAX_SCORE = 100;
         const keywordDensity = this.getKeywordDensity();
-        const keywordInQuestion = this.getKeywordInQuestion();
-        const subKeywordsInQuestion = this.getSubKeywordsInQuestion();
+        const keywordInQuestion = this.getKeywordInTitle();
+        const subKeywordsInQuestion = this.getSubKeywordsInTitle();
         const subKeywordsDensity = this.getSubKeywordsDensity();
         const keywordInQuestionScore = keywordInQuestion.density * 10;
         const subKeywordsInQuestionScore = subKeywordsInQuestion.length * 10;
@@ -185,6 +186,10 @@ export class SeoAnalyzer {
         const keywordDensityScore = keywordDensity * 10;
         const totalScore = keywordInQuestionScore + subKeywordsInQuestionScore + subKeywordsDensityScore + keywordDensityScore;
         return Math.min(totalScore, MAX_SCORE); // SEO score should never go above 100
+    }
+
+    getTitleWordCount(): number {
+        return this.htmlAnalyzer.getWordCount(this.content.title);
     }
 }
 

@@ -78,14 +78,14 @@ class SeoAnalyzer {
                 goodPoints.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${subKeywordDensity.density.toFixed(2)}%.`);
             }
         });
-        if (this.getKeywordInQuestion()) {
+        if (this.getKeywordInTitle()) {
             goodPoints.push(`You have your main keyword in question.`);
         }
         else {
             warnings.push('No main keyword in question.');
         }
-        if (this.getSubKeywordsInQuestion().length > 0) {
-            goodPoints.push(`You have ${this.getSubKeywordsInQuestion().length} sub keywords in question.`);
+        if (this.getSubKeywordsInTitle().length > 0) {
+            goodPoints.push(`You have ${this.getSubKeywordsInTitle().length} sub keywords in question.`);
         }
         else {
             warnings.push('No sub keywords in question.');
@@ -123,25 +123,26 @@ class SeoAnalyzer {
             warnings.push('Missing meta description.');
         return { warnings, goodPoints };
     }
-    getKeywordInQuestion(keyword = null) {
+    getKeywordInTitle(keyword = null) {
         if (keyword === null) {
             keyword = this.content.keyword;
         }
-        const density = this.calculateDensity(keyword, this.content.question);
+        const density = this.calculateDensity(keyword, this.content.title);
         return {
             keyword,
-            density
+            density,
+            position: 2
         };
     }
-    getSubKeywordsInQuestion() {
+    getSubKeywordsInTitle() {
         let subKeywordsInQuestion = [];
         this.content.subKeywords.forEach((sub_keyword) => {
-            subKeywordsInQuestion.push(this.getKeywordInQuestion(sub_keyword));
+            subKeywordsInQuestion.push(this.getKeywordInTitle(sub_keyword));
         });
         return subKeywordsInQuestion;
     }
-    countOccurrencesInString(keyword, string) {
-        return string.split(keyword).length - 1;
+    countOccurrencesInString(keyword, stringContent) {
+        return stringContent.split(keyword).length - 1;
     }
     getSeoScore() {
         const MAX_SCORE = 100;
@@ -152,8 +153,8 @@ class SeoAnalyzer {
     getKeywordSeoScore() {
         const MAX_SCORE = 100;
         const keywordDensity = this.getKeywordDensity();
-        const keywordInQuestion = this.getKeywordInQuestion();
-        const subKeywordsInQuestion = this.getSubKeywordsInQuestion();
+        const keywordInQuestion = this.getKeywordInTitle();
+        const subKeywordsInQuestion = this.getSubKeywordsInTitle();
         const subKeywordsDensity = this.getSubKeywordsDensity();
         const keywordInQuestionScore = keywordInQuestion.density * 10;
         const subKeywordsInQuestionScore = subKeywordsInQuestion.length * 10;
@@ -163,6 +164,9 @@ class SeoAnalyzer {
         const keywordDensityScore = keywordDensity * 10;
         const totalScore = keywordInQuestionScore + subKeywordsInQuestionScore + subKeywordsDensityScore + keywordDensityScore;
         return Math.min(totalScore, MAX_SCORE); // SEO score should never go above 100
+    }
+    getTitleWordCount() {
+        return this.htmlAnalyzer.getWordCount(this.content.title);
     }
 }
 exports.SeoAnalyzer = SeoAnalyzer;

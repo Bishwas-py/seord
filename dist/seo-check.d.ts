@@ -19,9 +19,9 @@ export declare class SeoCheck {
         totalLinks: number;
         internalLinks: import("./interfaces").LinksGroup;
         outboundLinks: import("./interfaces").LinksGroup;
-        questionSEO: {
-            subKeywordsWithQuestion: import("./interfaces").KeywordDensity[];
-            keywordWithQuestion: import("./interfaces").KeywordDensity;
+        titleSEO: {
+            subKeywordsWithTitle: import("./interfaces").KeywordDensity[];
+            keywordWithTitle: import("./interfaces").KeywordDensity;
         };
     };
 }

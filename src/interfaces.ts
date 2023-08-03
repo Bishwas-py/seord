@@ -1,8 +1,8 @@
 interface Link { text: string, href: string }
 interface LinksGroup { all: Link[], duplicate: Link[], unique: Link[] }
-interface KeywordDensity { keyword: string, density: number }
+interface KeywordDensity { keyword: string, density: number, position?: number }
 interface ContentJson {
-    question: string,
+    title: string,
     keyword: string,
     subKeywords: string[],
     htmlText: string,
@@ -20,9 +20,9 @@ interface SeoData {
     totalLinks: number,
     internalLinks: LinksGroup,
     outboundLinks: LinksGroup,
-    questionSEO: {
-        subKeywordsWithQuestion: KeywordDensity[],
-        keywordWithQuestion: KeywordDensity
+    titleSEO: {
+        subKeywordsWithTitle: KeywordDensity[],
+        keywordWithTitle: KeywordDensity
     }
 }
 

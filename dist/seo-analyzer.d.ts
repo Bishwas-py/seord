@@ -17,9 +17,10 @@ export declare class SeoAnalyzer {
         warnings: string[];
         goodPoints: string[];
     };
-    getKeywordInQuestion(keyword?: string | null): KeywordDensity;
-    getSubKeywordsInQuestion(): KeywordDensity[];
-    countOccurrencesInString(keyword: string, string: string): number;
+    getKeywordInTitle(keyword?: string | null): KeywordDensity;
+    getSubKeywordsInTitle(): KeywordDensity[];
+    countOccurrencesInString(keyword: string, stringContent: string): number;
     getSeoScore(): number;
     getKeywordSeoScore(): number;
+    getTitleWordCount(): number;
 }

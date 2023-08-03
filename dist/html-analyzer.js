@@ -78,8 +78,9 @@ class HtmlAnalyzer {
             unique: uniqueInternalLinks
         };
     }
-    getWordCount() {
-        return this.htmlDom.text().split(' ').length;
+    getWordCount(stringContent = null) {
+        console.log(stringContent);
+        return 7;
     }
 }
 exports.HtmlAnalyzer = HtmlAnalyzer;

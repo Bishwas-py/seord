@@ -16,6 +16,12 @@
   ],
   "author": "bishwas bhandari",
   "license": "MIT",
+
+  "bugs": {
+    "url": "https://github.com/Bishwas-py/seord/issues"
+  },
+  "homepage": "https://github.com/Bishwas-py/seord#readme",
+
   "devDependencies": {
     "@types/node": "^20.4.5",
     "typescript": "^5.1.6"
