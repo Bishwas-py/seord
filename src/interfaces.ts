@@ -15,8 +15,10 @@ interface ContentJson {
 
 interface SeoData {
     seoScore: number,
+    wordCount: number,
     keywordSeoScore: number,
-    messages: { warnings: string[], goodPoints: string[] },
+    keywordFrequency: number,
+    messages: { warnings: string[], goodPoints: string[], minorWarnings: string[] },
     keywordDensity: number,
     subKeywordDensity: KeywordDensity[],
     totalLinks: number,
@@ -24,7 +26,8 @@ interface SeoData {
     outboundLinks: LinksGroup,
     titleSEO: {
         subKeywordsWithTitle: KeywordDensity[],
-        keywordWithTitle: KeywordDensity
+        keywordWithTitle: KeywordDensity,
+        wordCount: number
     }
 }
 
