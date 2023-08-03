@@ -11,8 +11,7 @@ export class SeoCheck {
 
     constructor(contentJson: ContentJson, siteDomainName: string|null = null) {
         this.content = contentJson;
-        this.content.title = this.content.title.toLowerCase();
-        this.assignKeywordsToLowerCase();
+        this.makeContentLowerCase();
         this.siteDomainName = siteDomainName;
         this.htmlAnalyzer = new HtmlAnalyzer(this.content.htmlText, this.siteDomainName);
         this.seoAnalyzer = new SeoAnalyzer(
@@ -21,7 +20,9 @@ export class SeoCheck {
         );
     }
 
-    private assignKeywordsToLowerCase() {
+    private makeContentLowerCase() {
+        this.content.title = this.content.title.toLowerCase();
+        this.content.metaDescription = this.content.metaDescription.toLowerCase();
         this.content.keyword = this.content.keyword.toLowerCase();
         this.content.subKeywords = this.content.subKeywords.map((subKeyword) => {
             return subKeyword.toLowerCase();
