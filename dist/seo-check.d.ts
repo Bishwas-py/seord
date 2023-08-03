@@ -9,9 +9,12 @@ export declare class SeoCheck {
     constructor(contentJson: ContentJson, siteDomainName?: string | null);
     analyzeSeo(): {
         seoScore: number;
+        wordCount: number;
         keywordSeoScore: number;
+        keywordFrequency: number;
         messages: {
             warnings: string[];
+            minorWarnings: string[];
             goodPoints: string[];
         };
         keywordDensity: number;
@@ -22,6 +25,7 @@ export declare class SeoCheck {
         titleSEO: {
             subKeywordsWithTitle: import("./interfaces").KeywordDensity[];
             keywordWithTitle: import("./interfaces").KeywordDensity;
+            wordCount: number;
         };
     };
 }

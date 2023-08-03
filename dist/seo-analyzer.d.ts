@@ -7,20 +7,34 @@ export declare class SeoAnalyzer {
     htmlAnalyzer: HtmlAnalyzer;
     htmlDom: HtmlAnalyzer['htmlDom'];
     bodyText: string;
+    messages: {
+        warnings: string[];
+        minorWarnings: string[];
+        goodPoints: string[];
+    };
     constructor(content: ContentJson, htmlAnalyzer: HtmlAnalyzer);
     getSubKeywordsDensity(): KeywordDensity[];
+    assignDensityScore(key: any, defaultValue: any): any;
     calculateDensity(keyword: string, bodyText?: string | null): number;
     getKeywordDensity(): number;
     totalUniqueInternalLinksCount(): number;
     totalUniqueExternalLinksCount(): number;
-    getMessages(): {
-        warnings: string[];
-        goodPoints: string[];
-    };
     getKeywordInTitle(keyword?: string | null): KeywordDensity;
     getSubKeywordsInTitle(): KeywordDensity[];
-    countOccurrencesInString(keyword: string, stringContent: string): number;
+    getKeywordInMetaDescription(keyword?: string | null): KeywordDensity;
+    getSubKeywordsInMetaDescription(): KeywordDensity[];
+    countOccurrencesInString(keyword?: string | null, stringContent?: string | null): number;
     getSeoScore(): number;
     getKeywordSeoScore(): number;
     getTitleWordCount(): number;
+    assignMessagesForKeyword(): void;
+    assignMessagesForSubKeywords(): void;
+    assignMessagesForTitle(): void;
+    assignMessagesForLinks(): void;
+    assignMessagesForMetaDescription(): void;
+    getMessages(): {
+        warnings: string[];
+        minorWarnings: string[];
+        goodPoints: string[];
+    };
 }

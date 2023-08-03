@@ -13,7 +13,9 @@ class SeoCheck {
     analyzeSeo() {
         return {
             seoScore: this.seoAnalyzer.getSeoScore(),
+            wordCount: this.htmlAnalyzer.getWordCount(),
             keywordSeoScore: this.seoAnalyzer.getKeywordSeoScore(),
+            keywordFrequency: this.seoAnalyzer.countOccurrencesInString(),
             messages: this.seoAnalyzer.getMessages(),
             keywordDensity: this.seoAnalyzer.getKeywordDensity(),
             subKeywordDensity: this.seoAnalyzer.getSubKeywordsDensity(),
@@ -23,6 +25,7 @@ class SeoCheck {
             titleSEO: {
                 subKeywordsWithTitle: this.seoAnalyzer.getSubKeywordsInTitle(),
                 keywordWithTitle: this.seoAnalyzer.getKeywordInTitle(),
+                wordCount: this.seoAnalyzer.getTitleWordCount(),
             }
         };
     }

@@ -1,3 +1,5 @@
+import type {HtmlAnalyzer} from "./html-analyzer";
+
 interface Link { text: string, href: string }
 interface LinksGroup { all: Link[], duplicate: Link[], unique: Link[] }
 interface KeywordDensity { keyword: string, density: number, position?: number }
@@ -25,6 +27,7 @@ interface SeoData {
         keywordWithTitle: KeywordDensity
     }
 }
+
 
 export {
     Link,

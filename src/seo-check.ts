@@ -22,9 +22,11 @@ export class SeoCheck {
     analyzeSeo() {
         return {
             seoScore: this.seoAnalyzer.getSeoScore(),
+            wordCount: this.htmlAnalyzer.getWordCount(),
             keywordSeoScore: this.seoAnalyzer.getKeywordSeoScore(),
-            messages: this.seoAnalyzer.getMessages(),
-            keywordDensity: this.seoAnalyzer.getKeywordDensity(),
+            keywordFrequency: this.seoAnalyzer.countOccurrencesInString(),
+            messages: this.seoAnalyzer.messages,
+            keywordDensity: this.seoAnalyzer.keywordDensity,
             subKeywordDensity: this.seoAnalyzer.getSubKeywordsDensity(),
             totalLinks: this.htmlAnalyzer.getAllLinks().length,
             internalLinks: this.htmlAnalyzer.getInternalLinks(),
@@ -32,6 +34,7 @@ export class SeoCheck {
             titleSEO: {
                 subKeywordsWithTitle: this.seoAnalyzer.getSubKeywordsInTitle(),
                 keywordWithTitle: this.seoAnalyzer.getKeywordInTitle(),
+                wordCount: this.seoAnalyzer.getTitleWordCount(),
             }
         };
     }

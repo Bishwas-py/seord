@@ -85,7 +85,8 @@ class HtmlAnalyzer {
         else {
             stringContent = stringContent.toLowerCase();
         }
-        return stringContent.split(' ').length;
+        let gapSpaceRegex = /\s+/gi;
+        return stringContent.trim().replace(gapSpaceRegex, ' ').split(' ').length;
     }
 }
 exports.HtmlAnalyzer = HtmlAnalyzer;

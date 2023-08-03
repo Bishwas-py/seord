@@ -91,13 +91,13 @@ export class HtmlAnalyzer {
         }
     }
 
+    getPureText(stringContent: string) {
+        let gapSpaceRegex = /\s+/gi;
+        return stringContent.trim().replace(gapSpaceRegex, ' ');
+    }
 
-     getWordCount(stringContent: string | null = null): number {
-        if (!stringContent) {
-            stringContent = this.htmlDom.text().toLowerCase();
-        } else {
-            stringContent = stringContent.toLowerCase();
-        }
-        return stringContent.split(' ').length;
+    getWordCount(stringContent: string | null = null): number {
+        stringContent = stringContent ? stringContent.toLowerCase() : this.htmlDom.text().toLowerCase();
+        return this.getPureText(stringContent).split(' ').length;
     }
 }
