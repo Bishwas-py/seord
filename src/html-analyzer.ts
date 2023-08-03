@@ -8,10 +8,12 @@ import type {Link, LinksGroup} from "./interfaces";
 export class HtmlAnalyzer {
     public htmlDom: CheerioAPI;
     public siteDomainName: string | null;
+    public bodyText: string;
 
     constructor(htmlContent: string, siteDomainName: string | null = null) {
         this.htmlDom = load(htmlContent);
         this.siteDomainName = siteDomainName;
+        this.bodyText = this.htmlDom.text().toLowerCase();
     }
 
 

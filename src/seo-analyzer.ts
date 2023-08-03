@@ -22,8 +22,6 @@ export class SeoAnalyzer {
 
     public content: ContentJson;
     public htmlAnalyzer: HtmlAnalyzer;
-    public htmlDom: HtmlAnalyzer['htmlDom'];
-    public bodyText: string;
     public keywordDensity: number;
 
     public messages: { warnings: string[], minorWarnings: string[], goodPoints: string[] } = {
@@ -35,8 +33,6 @@ export class SeoAnalyzer {
     constructor(content: ContentJson, htmlAnalyzer: HtmlAnalyzer) {
         this.content = content;
         this.htmlAnalyzer = htmlAnalyzer;
-        this.htmlDom = htmlAnalyzer.htmlDom;
-        this.bodyText = this.htmlDom.text().toLowerCase();
         this.keywordDensity = this.calculateDensity(this.content.keyword);
         this.assignMessages();
     }
@@ -300,10 +296,10 @@ export class SeoAnalyzer {
     /**
      * Calculates the density of a keyword in the given string of body text.
      * @param keyword Should not be null.
-     * @param bodyText If null, it will use the default value, i.e. `this.bodyText`
+     * @param bodyText If null, it will use the default value, i.e. `this.htmlAnalyzer.bodyText`
      */
     calculateDensity(keyword: string, bodyText: string | null = null): number {
-        bodyText = bodyText ?? this.bodyText;
+        bodyText = bodyText ?? this.htmlAnalyzer.bodyText;
         return (this.countOccurrencesInString(keyword, bodyText) / this.htmlAnalyzer.getWordCount(bodyText)) * 100;
     }
 
@@ -311,12 +307,12 @@ export class SeoAnalyzer {
     /**
      * Returns the number of occurrences of a keyword in a string. Or you can say, it returns the keyword count in the given string.
      * @param keyword If null, it will use the default value, i.e. `this.content.keyword`
-     * @param stringContent If null, it will use the default value, i.e. `this.bodyText`
+     * @param stringContent If null, it will use the default value, i.e. `this.htmlAnalyzer.bodyText`
      * @return number The number of occurrences of the keyword in the string.
      */
     countOccurrencesInString(keyword: string | null = null, stringContent: string | null = null): number {
         keyword = keyword ?? this.content.keyword
-        stringContent = stringContent ?? this.bodyText
+        stringContent = stringContent ?? this.htmlAnalyzer.bodyText
         return stringContent.split(keyword).length - 1; // -1 because the split function will always return one more than the actual occurrences
     }
 

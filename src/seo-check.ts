@@ -11,12 +11,21 @@ export class SeoCheck {
 
     constructor(contentJson: ContentJson, siteDomainName: string|null = null) {
         this.content = contentJson;
+        this.content.title = this.content.title.toLowerCase();
+        this.assignKeywordsToLowerCase();
         this.siteDomainName = siteDomainName;
         this.htmlAnalyzer = new HtmlAnalyzer(this.content.htmlText, this.siteDomainName);
         this.seoAnalyzer = new SeoAnalyzer(
             this.content,
             this.htmlAnalyzer
         );
+    }
+
+    private assignKeywordsToLowerCase() {
+        this.content.keyword = this.content.keyword.toLowerCase();
+        this.content.subKeywords = this.content.subKeywords.map((subKeyword) => {
+            return subKeyword.toLowerCase();
+        });
     }
 
     analyzeSeo() {
