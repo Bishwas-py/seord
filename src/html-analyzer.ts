@@ -1,5 +1,5 @@
 import {type CheerioAPI, load} from "cheerio";
-import type {Link, LinksGroup} from "./interfaces";
+import type {Heading, Link, LinksGroup} from "./interfaces";
 
 /**
  * Class to analyze HTML content
@@ -30,6 +30,18 @@ export class HtmlAnalyzer {
             });
         });
         return allLinks;
+    }
+
+    getAllHeadingTags(): Heading[] {
+        let allHeadingTags: Heading[] = []
+        this.htmlDom("h1,h2,h3,h4,h5,h6").each((index: number, element) => {
+            let headingElement = this.htmlDom(element);
+            allHeadingTags.push({
+                text: headingElement.text(),
+                tag: headingElement.prop('tagName')
+            });
+        });
+        return allHeadingTags;
     }
 
     isRelativeLink(href: string): boolean {
@@ -102,4 +114,5 @@ export class HtmlAnalyzer {
         stringContent = stringContent ? stringContent.toLowerCase() : this.htmlDom.text().toLowerCase();
         return this.getPureText(stringContent).split(' ').length;
     }
+
 }

@@ -9,14 +9,15 @@ export class SeoCheck {
     public htmlAnalyzer: HtmlAnalyzer;
     public seoAnalyzer: SeoAnalyzer;
 
-    constructor(contentJson: ContentJson, siteDomainName: string|null = null) {
+    constructor(contentJson: ContentJson, siteDomainName: string|null = null, strictMode: boolean = false) {
         this.content = contentJson;
         this.makeContentLowerCase();
         this.siteDomainName = siteDomainName;
         this.htmlAnalyzer = new HtmlAnalyzer(this.content.htmlText, this.siteDomainName);
         this.seoAnalyzer = new SeoAnalyzer(
             this.content,
-            this.htmlAnalyzer
+            this.htmlAnalyzer,
+            strictMode
         );
     }
 

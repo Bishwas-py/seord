@@ -1,5 +1,5 @@
 import type {HtmlAnalyzer} from "./html-analyzer";
-import type {ContentJson, KeywordDensity} from "./interfaces";
+import type {ContentJson, Heading, KeywordDensity} from "./interfaces";
 
 export class SeoAnalyzer {
 
@@ -23,6 +23,8 @@ export class SeoAnalyzer {
     public content: ContentJson;
     public htmlAnalyzer: HtmlAnalyzer;
     public keywordDensity: number;
+    public strictMode: boolean;
+    public headings: Heading[] = [];
 
     public messages: { warnings: string[], minorWarnings: string[], goodPoints: string[] } = {
         warnings: [],
@@ -30,10 +32,20 @@ export class SeoAnalyzer {
         goodPoints: []
     }
 
-    constructor(content: ContentJson, htmlAnalyzer: HtmlAnalyzer) {
+    constructor(content: ContentJson, htmlAnalyzer: HtmlAnalyzer, strictMode: boolean = false) {
         this.content = content;
         this.htmlAnalyzer = htmlAnalyzer;
+        this.strictMode = strictMode;
         this.keywordDensity = this.calculateDensity(this.content.keyword);
+        this.headings = this.htmlAnalyzer.getAllHeadingTags();
+        if (!strictMode) {
+            this.headings.push(
+                {
+                    tag: 'H1',
+                    'text': this.content.title
+                }
+            )
+        }
         this.assignMessages();
     }
 
@@ -273,6 +285,69 @@ export class SeoAnalyzer {
         }
     }
 
+
+    filterHeading(headingTag: string): Heading[] {
+        return this.headings.filter((heading) => heading.tag.toLowerCase() === headingTag.toLowerCase())
+    }
+
+    private assignMessagesForHeadings() {
+        if (this.headings.length === 0) {
+            this.messages.warnings.push('Missing headings, please add at least one heading tag.');
+        } else {
+            this.messages.goodPoints.push(`You have ${this.headings.length} this.headings.`);
+            // warning for missing h1 tag
+
+            let headingsOne = this.filterHeading('h1');
+            if (headingsOne.length === 0) {
+                this.messages.warnings.push('Missing h1 tag, please add at least one h1 tag.');
+            } else if (headingsOne.length > 1) {
+                this.messages.warnings.push('More than one h1 tag found, please remove all but one h1 tag.');
+            } else {
+                this.messages.goodPoints.push('Nice. You have h1 tag, which is essential.');
+            }
+
+            let headingsTwo = this.filterHeading('h2');
+            if (headingsTwo.length === 0) {
+                this.messages.warnings.push('Missing h2 tag, please add at least one h2 tag. It is recommended to have at least one h2 tag.');
+            } else {
+                this.messages.goodPoints.push('Nice. You have h2 tag, which is essential.');
+            }
+
+            let headingsThree = this.filterHeading('h3');
+            if (headingsThree.length === 0) {
+                this.messages.minorWarnings.push('Missing h3 tag, please add at least one h3 tag. Having h3 tag is not mandatory, but it is recommended to have at least one h3 tag.');
+            } else {
+                this.messages.goodPoints.push('You have h3 tag, which is good.');
+            }
+        }
+    }
+
+    // keyword in Headings
+    assignMessagesForKeywordInHeadings() {
+        this.headings.forEach((heading) => {
+            let keywordInHeading = this.countOccurrencesInString(this.content.keyword, heading.text);
+            if (keywordInHeading > 0) {
+                this.messages.goodPoints.push(`Keyword "${this.content.keyword}" found in ${heading.tag} tag "${heading.text}".`);
+            } else {
+                this.messages.minorWarnings.push(`Keyword "${this.content.keyword}" not found in ${heading.tag} tag "${heading.text}".`);
+            }
+        });
+    }
+
+    // sub keywords in Headings
+    assignMessagesForSubKeywordsInHeadings() {
+        this.headings.forEach((heading) => {
+            this.content.subKeywords.forEach((subKeyword) => {
+                let subKeywordInHeading = this.countOccurrencesInString(subKeyword, heading.text);
+                if (subKeywordInHeading > 0) {
+                    this.messages.goodPoints.push(`Sub keyword "${subKeyword}" found in ${heading.tag} tag "${heading.text}", which is good.`);
+                } else {
+                    this.messages.minorWarnings.push(`Sub keyword "${subKeyword}" not found in ${heading.tag} tag "${heading.text}".`);
+                }
+            });
+        });
+    }
+
     /**
      * Returns the messages object.
      * @return object The messages object.
@@ -290,6 +365,9 @@ export class SeoAnalyzer {
         this.assignMessagesForTitle();
         this.assignMessagesForLinks();
         this.assignMessagesForMetaDescription();
+        this.assignMessagesForKeywordInHeadings();
+        this.assignMessagesForSubKeywordsInHeadings();
+        this.assignMessagesForHeadings();
         return this.messages;
     }
 

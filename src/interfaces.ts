@@ -13,6 +13,8 @@ interface ContentJson {
     countryCode: string
 }
 
+interface Heading { text: string, tag: string }
+
 interface SeoData {
     seoScore: number,
     wordCount: number,
@@ -37,5 +39,6 @@ export {
     LinksGroup,
     KeywordDensity,
     ContentJson,
-    SeoData
+    SeoData,
+    Heading
 }
