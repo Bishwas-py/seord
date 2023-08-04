@@ -29,6 +29,7 @@ npm i seord
 - Keyword SEO Score
 - Word Count Analysis
 - Checks for meta description length, placement, keyword density, and keyword frequency 
+- Headings Analysis `(H1, H2, H3, H4, H5, H6)` on the basis of keyword and sub keywords, their density, and usage
 
 ## Usage
 
