@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SeoAnalyzer = void 0;
 class SeoAnalyzer {
-    constructor(content, htmlAnalyzer) {
-        this.MINIMUM_KEYWORD_DENSITY = 1;
-        this.MAXIMUM_KEYWORD_DENSITY = 3;
-        this.MAXIMUM_SUB_KEYWORD_DENSITY = 1;
+    constructor(content, htmlAnalyzer, strictMode = false) {
+        this.MINIMUM_KEYWORD_DENSITY = 0.46;
+        this.MAXIMUM_KEYWORD_DENSITY = 1.1;
+        this.MAXIMUM_SUB_KEYWORD_DENSITY = 0.9;
         this.MINIMUM_SUB_KEYWORD_DENSITY = 0.12;
         this.EXTREME_LOW_SUB_KEYWORD_DENSITY = 0.09;
         this.MAXIMUM_META_DESCRIPTION_LENGTH = 160;
@@ -15,6 +15,7 @@ class SeoAnalyzer {
         this.MINIMUM_TITLE_LENGTH = 40;
         this.MAXIMUM_SUB_KEYWORD_IN_META_DESCRIPTION_DENSITY = 5;
         this.MINIMUM_SUB_KEYWORD_IN_META_DESCRIPTION_DENSITY = 2;
+        this.headings = [];
         this.messages = {
             warnings: [],
             minorWarnings: [],
@@ -22,7 +23,15 @@ class SeoAnalyzer {
         };
         this.content = content;
         this.htmlAnalyzer = htmlAnalyzer;
+        this.strictMode = strictMode;
         this.keywordDensity = this.calculateDensity(this.content.keyword);
+        this.headings = this.htmlAnalyzer.getAllHeadingTags();
+        if (!strictMode) {
+            this.headings.push({
+                tag: 'H1',
+                'text': this.content.title
+            });
+        }
         this.assignMessages();
     }
     getSubKeywordsDensity() {
@@ -136,7 +145,7 @@ class SeoAnalyzer {
                 }
                 else if (subKeywordDensity.density < this.MINIMUM_SUB_KEYWORD_DENSITY) {
                     let densityBeingLowString = subKeywordDensity.density < this.EXTREME_LOW_SUB_KEYWORD_DENSITY ? 'too low' : 'low';
-                    this.messages.warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${densityBeingLowString} in the content, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
+                    this.messages.minorWarnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${densityBeingLowString} in the content, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
                 }
                 else {
                     this.messages.goodPoints.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${subKeywordDensity.density.toFixed(2)}% in the content, which is good.`);
@@ -245,7 +254,7 @@ class SeoAnalyzer {
                 }
                 else if (subKeyword.density < this.MINIMUM_SUB_KEYWORD_IN_META_DESCRIPTION_DENSITY) {
                     let densityBeingLowString = subKeyword.density < 0.2 ? 'too low' : 'low';
-                    this.messages.warnings.push(`The density of sub keyword "${subKeyword.keyword}" in meta description is ${densityBeingLowString}, i.e. ${subKeyword.density.toFixed(2)}%.`);
+                    this.messages.minorWarnings.push(`The density of sub keyword "${subKeyword.keyword}" in meta description is ${densityBeingLowString}, i.e. ${subKeyword.density.toFixed(2)}%.`);
                 }
                 else {
                     this.messages.goodPoints.push(`The density of sub keyword "${subKeyword.keyword}" in meta description is ${subKeyword.density.toFixed(2)}%.`);
@@ -255,6 +264,68 @@ class SeoAnalyzer {
         else {
             this.messages.warnings.push('Missing meta description.');
         }
+    }
+    filterHeading(headingTag) {
+        return this.headings.filter((heading) => heading.tag.toLowerCase() === headingTag.toLowerCase());
+    }
+    assignMessagesForHeadings() {
+        if (this.headings.length === 0) {
+            this.messages.warnings.push('Missing headings, please add at least one heading tag.');
+        }
+        else {
+            this.messages.goodPoints.push(`You have ${this.headings.length} this.headings.`);
+            // warning for missing h1 tag
+            let headingsOne = this.filterHeading('h1');
+            if (headingsOne.length === 0) {
+                this.messages.warnings.push('Missing h1 tag, please add at least one h1 tag.');
+            }
+            else if (headingsOne.length > 1) {
+                this.messages.warnings.push('More than one h1 tag found, please remove all but one h1 tag.');
+            }
+            else {
+                this.messages.goodPoints.push('Nice. You have h1 tag, which is essential.');
+            }
+            let headingsTwo = this.filterHeading('h2');
+            if (headingsTwo.length === 0) {
+                this.messages.warnings.push('Missing h2 tag, please add at least one h2 tag. It is recommended to have at least one h2 tag.');
+            }
+            else {
+                this.messages.goodPoints.push('Nice. You have h2 tag, which is essential.');
+            }
+            let headingsThree = this.filterHeading('h3');
+            if (headingsThree.length === 0) {
+                this.messages.minorWarnings.push('Missing h3 tag, please add at least one h3 tag. Having h3 tag is not mandatory, but it is recommended to have at least one h3 tag.');
+            }
+            else {
+                this.messages.goodPoints.push('You have h3 tag, which is good.');
+            }
+        }
+    }
+    // keyword in Headings
+    assignMessagesForKeywordInHeadings() {
+        this.headings.forEach((heading) => {
+            let keywordInHeading = this.countOccurrencesInString(this.content.keyword, heading.text);
+            if (keywordInHeading > 0) {
+                this.messages.goodPoints.push(`Keyword "${this.content.keyword}" found in ${heading.tag} tag "${heading.text}".`);
+            }
+            else {
+                this.messages.minorWarnings.push(`Keyword "${this.content.keyword}" not found in ${heading.tag} tag "${heading.text}".`);
+            }
+        });
+    }
+    // sub keywords in Headings
+    assignMessagesForSubKeywordsInHeadings() {
+        this.headings.forEach((heading) => {
+            this.content.subKeywords.forEach((subKeyword) => {
+                let subKeywordInHeading = this.countOccurrencesInString(subKeyword, heading.text);
+                if (subKeywordInHeading > 0) {
+                    this.messages.goodPoints.push(`Sub keyword "${subKeyword}" found in ${heading.tag} tag "${heading.text}", which is good.`);
+                }
+                else {
+                    this.messages.minorWarnings.push(`Sub keyword "${subKeyword}" not found in ${heading.tag} tag "${heading.text}".`);
+                }
+            });
+        });
     }
     /**
      * Returns the messages object.
@@ -273,6 +344,9 @@ class SeoAnalyzer {
         this.assignMessagesForTitle();
         this.assignMessagesForLinks();
         this.assignMessagesForMetaDescription();
+        this.assignMessagesForKeywordInHeadings();
+        this.assignMessagesForSubKeywordsInHeadings();
+        this.assignMessagesForHeadings();
         return this.messages;
     }
     /**

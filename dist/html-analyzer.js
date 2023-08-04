@@ -25,6 +25,17 @@ class HtmlAnalyzer {
         });
         return allLinks;
     }
+    getAllHeadingTags() {
+        let allHeadingTags = [];
+        this.htmlDom("h1,h2,h3,h4,h5,h6").each((index, element) => {
+            let headingElement = this.htmlDom(element);
+            allHeadingTags.push({
+                text: headingElement.text(),
+                tag: headingElement.prop('tagName')
+            });
+        });
+        return allHeadingTags;
+    }
     isRelativeLink(href) {
         return href.startsWith('./') || href.startsWith('../') || href.startsWith('/') || href.startsWith('#');
     }

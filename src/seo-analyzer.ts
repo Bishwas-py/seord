@@ -3,10 +3,10 @@ import type {ContentJson, Heading, KeywordDensity} from "./interfaces";
 
 export class SeoAnalyzer {
 
-    MINIMUM_KEYWORD_DENSITY = 1
-    MAXIMUM_KEYWORD_DENSITY = 3
+    MINIMUM_KEYWORD_DENSITY = 0.46
+    MAXIMUM_KEYWORD_DENSITY = 1.1
 
-    MAXIMUM_SUB_KEYWORD_DENSITY = 1
+    MAXIMUM_SUB_KEYWORD_DENSITY = 0.9
     MINIMUM_SUB_KEYWORD_DENSITY = 0.12
     EXTREME_LOW_SUB_KEYWORD_DENSITY = 0.09
 
@@ -171,7 +171,7 @@ export class SeoAnalyzer {
                     this.messages.warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is too high in the content, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
                 } else if (subKeywordDensity.density < this.MINIMUM_SUB_KEYWORD_DENSITY) {
                     let densityBeingLowString = subKeywordDensity.density < this.EXTREME_LOW_SUB_KEYWORD_DENSITY ? 'too low' : 'low';
-                    this.messages.warnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${densityBeingLowString} in the content, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
+                    this.messages.minorWarnings.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${densityBeingLowString} in the content, i.e. ${subKeywordDensity.density.toFixed(2)}%.`);
                 } else {
                     this.messages.goodPoints.push(`The density of sub keyword "${subKeywordDensity.keyword}" is ${subKeywordDensity.density.toFixed(2)}% in the content, which is good.`);
                 }
@@ -275,7 +275,7 @@ export class SeoAnalyzer {
                     this.messages.warnings.push(`The density of sub keyword "${subKeyword.keyword}" in meta description is too high, i.e. ${subKeyword.density.toFixed(2)}%.`);
                 } else if (subKeyword.density < this.MINIMUM_SUB_KEYWORD_IN_META_DESCRIPTION_DENSITY) {
                     let densityBeingLowString = subKeyword.density < 0.2 ? 'too low' : 'low';
-                    this.messages.warnings.push(`The density of sub keyword "${subKeyword.keyword}" in meta description is ${densityBeingLowString}, i.e. ${subKeyword.density.toFixed(2)}%.`);
+                    this.messages.minorWarnings.push(`The density of sub keyword "${subKeyword.keyword}" in meta description is ${densityBeingLowString}, i.e. ${subKeyword.density.toFixed(2)}%.`);
                 } else {
                     this.messages.goodPoints.push(`The density of sub keyword "${subKeyword.keyword}" in meta description is ${subKeyword.density.toFixed(2)}%.`);
                 }

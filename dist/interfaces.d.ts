@@ -21,6 +21,10 @@ interface ContentJson {
     languageCode: string;
     countryCode: string;
 }
+interface Heading {
+    text: string;
+    tag: string;
+}
 interface SeoData {
     seoScore: number;
     wordCount: number;
@@ -42,4 +46,4 @@ interface SeoData {
         wordCount: number;
     };
 }
-export { Link, LinksGroup, KeywordDensity, ContentJson, SeoData };
+export { Link, LinksGroup, KeywordDensity, ContentJson, SeoData, Heading };

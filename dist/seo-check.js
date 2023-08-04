@@ -4,12 +4,12 @@ exports.SeoCheck = void 0;
 const seo_analyzer_1 = require("./seo-analyzer");
 const html_analyzer_1 = require("./html-analyzer");
 class SeoCheck {
-    constructor(contentJson, siteDomainName = null) {
+    constructor(contentJson, siteDomainName = null, strictMode = false) {
         this.content = contentJson;
         this.makeContentLowerCase();
         this.siteDomainName = siteDomainName;
         this.htmlAnalyzer = new html_analyzer_1.HtmlAnalyzer(this.content.htmlText, this.siteDomainName);
-        this.seoAnalyzer = new seo_analyzer_1.SeoAnalyzer(this.content, this.htmlAnalyzer);
+        this.seoAnalyzer = new seo_analyzer_1.SeoAnalyzer(this.content, this.htmlAnalyzer, strictMode);
     }
     makeContentLowerCase() {
         this.content.title = this.content.title.toLowerCase();

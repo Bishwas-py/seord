@@ -6,7 +6,7 @@ export declare class SeoCheck {
     siteDomainName: string | null;
     htmlAnalyzer: HtmlAnalyzer;
     seoAnalyzer: SeoAnalyzer;
-    constructor(contentJson: ContentJson, siteDomainName?: string | null);
+    constructor(contentJson: ContentJson, siteDomainName?: string | null, strictMode?: boolean);
     private makeContentLowerCase;
     analyzeSeo(): {
         seoScore: number;

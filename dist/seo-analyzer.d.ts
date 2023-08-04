@@ -1,5 +1,5 @@
 import type { HtmlAnalyzer } from "./html-analyzer";
-import type { ContentJson, KeywordDensity } from "./interfaces";
+import type { ContentJson, Heading, KeywordDensity } from "./interfaces";
 export declare class SeoAnalyzer {
     MINIMUM_KEYWORD_DENSITY: number;
     MAXIMUM_KEYWORD_DENSITY: number;
@@ -16,12 +16,14 @@ export declare class SeoAnalyzer {
     content: ContentJson;
     htmlAnalyzer: HtmlAnalyzer;
     keywordDensity: number;
+    strictMode: boolean;
+    headings: Heading[];
     messages: {
         warnings: string[];
         minorWarnings: string[];
         goodPoints: string[];
     };
-    constructor(content: ContentJson, htmlAnalyzer: HtmlAnalyzer);
+    constructor(content: ContentJson, htmlAnalyzer: HtmlAnalyzer, strictMode?: boolean);
     getSubKeywordsDensity(): KeywordDensity[];
     totalUniqueInternalLinksCount(): number;
     totalUniqueExternalLinksCount(): number;
@@ -37,6 +39,10 @@ export declare class SeoAnalyzer {
     private assignMessagesForTitle;
     private assignMessagesForLinks;
     private assignMessagesForMetaDescription;
+    filterHeading(headingTag: string): Heading[];
+    private assignMessagesForHeadings;
+    assignMessagesForKeywordInHeadings(): void;
+    assignMessagesForSubKeywordsInHeadings(): void;
     /**
      * Returns the messages object.
      * @return object The messages object.
