@@ -23,11 +23,12 @@ export class HtmlAnalyzer {
             let hrefElement = this.htmlDom(element);
             const href = hrefElement.attr('href') as string;
             const text = hrefElement.text() as string;
-
-            allLinks.push({
-                href,
-                text
-            });
+            if (href) {
+                allLinks.push({
+                    href,
+                    text
+                });
+            }
         });
         return allLinks;
     }
@@ -67,7 +68,7 @@ export class HtmlAnalyzer {
         let duplicateOutboundLinks = [] as Link[];
         let uniqueOutboundLinks = [] as Link[];
         this.getAllLinks().forEach((link) => {
-            if (!this.isInternalLink(link.href)) {
+            if (link.href && !this.isInternalLink(link.href)) {
                 if (allOutboundLinks.find(l => l.href === link.href)) {
                     duplicateOutboundLinks.push(link)
                 } else {
@@ -89,7 +90,7 @@ export class HtmlAnalyzer {
         let duplicateInternalLinks = [] as Link[];
         let uniqueInternalLinks = [] as Link[];
         this.getAllLinks().forEach((link) => {
-            if (this.isInternalLink(link.href)) {
+            if (link.href && this.isInternalLink(link.href)) {
                 if (allInternalLinks.find(l => l.href === link.href)) {
                     duplicateInternalLinks.push(link)
                 } else {
