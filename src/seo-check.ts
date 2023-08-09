@@ -30,7 +30,7 @@ export class SeoCheck {
         });
     }
 
-    analyzeSeo() {
+    async analyzeSeo() {
         return {
             seoScore: this.seoAnalyzer.getSeoScore(),
             wordCount: this.htmlAnalyzer.getWordCount(),

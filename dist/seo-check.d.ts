@@ -8,7 +8,7 @@ export declare class SeoCheck {
     seoAnalyzer: SeoAnalyzer;
     constructor(contentJson: ContentJson, siteDomainName?: string | null, strictMode?: boolean);
     private makeContentLowerCase;
-    analyzeSeo(): {
+    analyzeSeo(): Promise<{
         seoScore: number;
         wordCount: number;
         keywordSeoScore: number;
@@ -28,5 +28,5 @@ export declare class SeoCheck {
             keywordWithTitle: import("./interfaces").KeywordDensity;
             wordCount: number;
         };
-    };
+    }>;
 }
