@@ -76,7 +76,7 @@ export class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: this.content.title?.indexOf(keyword)
+            position: this.content.title ? this.content.title.split(keyword).indexOf(keyword) : -1
         } as KeywordDensity;
     }
 
@@ -96,7 +96,7 @@ export class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: this.content.metaDescription?.indexOf(keyword)
+            position: this.content.metaDescription ? this.content.metaDescription.split(keyword).indexOf(keyword) : -1
         } as KeywordDensity;
     }
 
