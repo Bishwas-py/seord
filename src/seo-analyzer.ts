@@ -101,7 +101,7 @@ export class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: this.getPosition(this.content.title, keyword)
+            position: this.getPosition(this.content.metaDescription, keyword)
         } as KeywordDensity;
     }
 
