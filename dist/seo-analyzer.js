@@ -52,13 +52,12 @@ class SeoAnalyzer {
         return this.htmlAnalyzer.getOutboundLinks().unique.length;
     }
     getKeywordInTitle(keyword = null) {
-        var _a;
         keyword = keyword !== null && keyword !== void 0 ? keyword : this.content.keyword;
         const density = this.calculateDensity(keyword, this.content.title);
         return {
             keyword,
             density,
-            position: (_a = this.content.title) === null || _a === void 0 ? void 0 : _a.indexOf(keyword)
+            position: this.content.title ? this.content.title.split(keyword).indexOf(keyword) : -1
         };
     }
     getSubKeywordsInTitle() {
@@ -69,7 +68,6 @@ class SeoAnalyzer {
         return subKeywordsInTitle;
     }
     getKeywordInMetaDescription(keyword = null) {
-        var _a;
         if (keyword === null) {
             keyword = this.content.keyword;
         }
@@ -77,7 +75,7 @@ class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: (_a = this.content.metaDescription) === null || _a === void 0 ? void 0 : _a.indexOf(keyword)
+            position: this.content.metaDescription ? this.content.metaDescription.split(keyword).indexOf(keyword) : -1
         };
     }
     getSubKeywordsInMetaDescription() {

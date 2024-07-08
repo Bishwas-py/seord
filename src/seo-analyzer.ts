@@ -76,8 +76,13 @@ export class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: this.content.title ? this.content.title.split(keyword).indexOf(keyword) : -1
+            position: this.getPosition(this.content.title, keyword)
         } as KeywordDensity;
+    }
+
+    getPosition(text: string, keyword: string) {
+        if (!text || !keyword) return -1;
+        return text.split(keyword)[0].split(' ').length
     }
 
     getSubKeywordsInTitle(): KeywordDensity[] {
@@ -96,7 +101,7 @@ export class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: this.content.metaDescription ? this.content.metaDescription.split(keyword).indexOf(keyword) : -1
+            position: this.getPosition(this.content.title, keyword)
         } as KeywordDensity;
     }
 
