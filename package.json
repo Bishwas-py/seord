@@ -1,6 +1,6 @@
 {
   "name": "seord",
-  "version": "0.0.5-patch.3",
+  "version": "0.0.5-patch.4",
   "description": "Advanced SEO Analyzer",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

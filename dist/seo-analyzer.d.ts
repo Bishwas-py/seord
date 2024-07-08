@@ -28,6 +28,7 @@ export declare class SeoAnalyzer {
     totalUniqueInternalLinksCount(): number;
     totalUniqueExternalLinksCount(): number;
     getKeywordInTitle(keyword?: string | null): KeywordDensity;
+    getPosition(text: string, keyword: string): number;
     getSubKeywordsInTitle(): KeywordDensity[];
     getKeywordInMetaDescription(keyword?: string | null): KeywordDensity;
     getSubKeywordsInMetaDescription(): KeywordDensity[];

@@ -57,8 +57,13 @@ class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: this.content.title ? this.content.title.split(keyword).indexOf(keyword) : -1
+            position: this.getPosition(this.content.title, keyword)
         };
+    }
+    getPosition(text, keyword) {
+        if (!text || !keyword)
+            return -1;
+        return text.split(keyword)[0].split(' ').length;
     }
     getSubKeywordsInTitle() {
         let subKeywordsInTitle = [];
@@ -75,7 +80,7 @@ class SeoAnalyzer {
         return {
             keyword,
             density,
-            position: this.content.metaDescription ? this.content.metaDescription.split(keyword).indexOf(keyword) : -1
+            position: this.getPosition(this.content.title, keyword)
         };
     }
     getSubKeywordsInMetaDescription() {
