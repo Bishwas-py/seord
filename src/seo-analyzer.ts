@@ -299,7 +299,7 @@ export class SeoAnalyzer {
         if (this.headings.length === 0) {
             this.messages.warnings.push('Missing headings, please add at least one heading tag.');
         } else {
-            this.messages.goodPoints.push(`You have ${this.headings.length} this.headings.`);
+            this.messages.goodPoints.push(`You have ${this.headings.length} headings.`);
             // warning for missing h1 tag
 
             let headingsOne = this.filterHeading('h1');
