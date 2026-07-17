@@ -1,9 +1,16 @@
 {
   "name": "seord",
-  "version": "0.0.5-patch.4",
+  "version": "1.0.0",
   "description": "Advanced SEO Analyzer",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bishwas-py/seord.git"
+  },
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
