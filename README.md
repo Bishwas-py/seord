@@ -210,7 +210,7 @@ interface Link { text: string; href: string }
 
 ## Migrating from 0.0.x
 
-Version 1.0.0 is a clean break from the `SeoCheck` class API:
+Version 2.0.0 is a clean break from the `SeoCheck` class API:
 
 - `new SeoCheck(contentJson, domain)` + `await seoCheck.analyzeSeo()` becomes
   `analyzeSeo(content, { siteDomainName: domain })`. The call is synchronous; drop the `await`.
