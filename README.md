@@ -19,214 +19,212 @@ npm i seord
 
 ## Features
 
-- Keyword Density and Frequency Analysis
-- Sub Keywords Density Analysis
-- SEO Messages: Get warnings and good points related to SEO.
-- Checks for Internal and Outbound Links
-- Checks for Duplicate Links and Unique Links; both Internal and Outbound
-- Checks for Keyword Placement within a given question
-- SEO Score Analysis
-- Keyword SEO Score
-- Word Count Analysis
-- Checks for meta description length, placement, keyword density, and keyword frequency 
-- Headings Analysis `(H1, H2, H3, H4, H5, H6)` on the basis of keyword and sub keywords, their density, and usage
+- Rule-based engine: 22 focused SEO checks, each individually disableable
+- Weighted SEO score with a per-rule breakdown, so the number is explainable
+- Keyword density, frequency, and placement analysis
+- Sub keyword density analysis in content, title, and meta description
+- Title and meta description length checks
+- Headings structure analysis (single h1, h2/h3 presence, keywords in headings)
+- Internal and outbound link analysis, including duplicates
+- SEO messages: warnings, minor warnings, and good points
+- Fully typed (TypeScript), synchronous, and dependency-light (only cheerio)
 
-## Usage
-
-First, require the library at the top of your file like so:
+## Quick start
 
 ```javascript
-import {SeoCheck} from "seord";
-```
+import { analyzeSeo } from "seord";
 
-Next, you will need to set up the ContentJson and domain name before performing an 
-SEO analysis. Here's an example:
-
-```javascript
-import {SeoCheck} from "seord";
-const htmlContent = `<h1>Does Progressive Raise Your Rates After 6 Months?</h1><p>When it comes to car insurance, 
-finding the right provider...
-`
-const contentJson = {
+const content = {
     title: 'Does Progressive raise your rates after 6 months?',
-    htmlText: htmlContent,
+    htmlText: `
+        <h1>Does Progressive Raise Your Rates After 6 Months?</h1>
+        <h2>How Are Car Insurance Rates Determined?</h2>
+        <p>When it comes to car insurance, finding the right provider matters.
+        Progressive is one of the largest insurers and progressive rates depend on
+        many factors like driving history, location and coverage level.</p>
+        <h3>How to Save Money on Car Insurance</h3>
+        <p>You can save money by comparing rates and premiums across providers.
+        Visit <a href="/guides/insurance">our insurance guide</a> or
+        <a href="https://www.iii.org">the Insurance Information Institute</a>.</p>
+    `,
     keyword: 'progressive',
-    subKeywords: ['car insurance', 'rates', 'premiums', 'save money', 'US'],
-    metaDescription: 'Find out if Progressive raises your rates after 6 months and what factors can impact your insurance premiums. Learn how to save money on car insurance in the US.',
-    languageCode: 'en',
-    countryCode: 'us'
+    subKeywords: ['car insurance', 'rates'],
+    metaDescription: 'Find out if Progressive raises your rates after 6 months and what factors can impact your insurance premiums. Learn how to save money on car insurance.',
 };
 
-// Initialize SeoCheck with html content, main keyword and sub keywords
-const seoCheck = new SeoCheck(contentJson, 'liveinabroad.com');
+const result = analyzeSeo(content, { siteDomainName: 'example.com' });
 
-// Perform analysis
-const result = seoCheck.analyzeSeo();
-// Print the result
-console.log(`Warnings: ${result.messages.warnings.length}`);
-result.messages.warnings.forEach((warning) => {
-    console.log(`  - ${warning}`);
-});
+console.log(`SEO Score: ${result.seoScore}`);
+console.log(`Keyword SEO Score: ${result.keywordSeoScore}`);
+console.log(`Keyword Density: ${result.keyword.density.toFixed(2)}%`);
+console.log(`Keyword Frequency: ${result.keyword.frequency}`);
+console.log(`Word Count: ${result.words.total}`);
+console.log(`Total Links: ${result.links.total}`);
+
+console.log(`\nWarnings: ${result.messages.warnings.length}`);
+result.messages.warnings.forEach((warning) => console.log(`  - ${warning}`));
 
 console.log(`\nGood Points: ${result.messages.goodPoints.length}`);
-result.messages.goodPoints.forEach((error) => {
-    console.log(`  - ${error}`);
-});
-
+result.messages.goodPoints.forEach((point) => console.log(`  - ${point}`));
 
 console.log(`\nMinor Warnings: ${result.messages.minorWarnings.length}`);
-result.messages.minorWarnings.forEach((error) => {
-    console.log(`  - ${error}`);
-});
-
-console.log("\nSEO Score: " + result.seoScore);
-console.log(`Keyword SEO Score: ${result.keywordSeoScore}`);
-console.log(`Keyword Density: ${result.keywordDensity}`);
-console.log(`Sub Keyword Density: ${result.subKeywordDensity.map((subKeywordDensity) => {
-    return `(${subKeywordDensity.keyword} ${subKeywordDensity.density})`;
-})}`);
-console.log(`Keyword Frequency: ${result.keywordFrequency}`);
-console.log(`Word Count: ${result.wordCount}`);
-console.log(`Total Links: ${result.totalLinks}`);
+result.messages.minorWarnings.forEach((minor) => console.log(`  - ${minor}`));
 ```
 
-I am using the `readFile` function from the `fs` module to read the HTML content from a file.
-You can use any method to get the HTML content, or you can just pass the HTML content directly
-as `string`.
+Output:
 
-The result of the above example will be:
 ```yaml
-Warnings: 7
-  - The density of sub keyword "car insurance" is too high in the content, i.e. 2.37%.
-  - The density of sub keyword "rates" is too high in the content, i.e. 4.18%.
-  - The density of sub keyword "premiums" is too high in the content, i.e. 1.39%.
-  - The density of sub keyword "us" is too high in the content, i.e. 1.39%.
-  - Not enough internal links. You only have 1 unique internal links, try increasing it.
-  - Not enough outbound links. You only have 0, try increasing it.
-  - Meta description is too long. It is 161 characters long, try reducing it.
+SEO Score: 84.18
+Keyword SEO Score: 100
+Keyword Density: 4.11%
+Keyword Frequency: 3
+Word Count: 73
+Total Links: 2
 
-Good Points: 25
+Warnings: 3
+  - Keyword density is too high. It is 4.11%, try decreasing it.
+  - The density of sub keyword "car insurance" is too high in the content, i.e. 4.11%.
+  - The density of sub keyword "rates" is too high in the content, i.e. 5.48%.
+
+Good Points: 23
   - Good, your content has a keyword "progressive".
-  - Keyword density is 1.39%.
-  - Good, your content has sub keywords "car insurance, rates, premiums, save money, us".
-  - The density of sub keyword "save money" is 0.56% in the content, which is good.
+  - No keyword overstuffing.
+  - Good, your content has sub keywords "car insurance, rates".
   - Title tag is 49 characters long.
   - Keyword density in title is 12.50%, which is good.
-  - You have 5 sub keywords in title.
-  - No duplicate internal links.
-  - No duplicate outbound links.
-  - The density of sub keyword "car insurance" in meta description is 3.45%.
-  - The density of sub keyword "rates" in meta description is 3.45%.
-  - The density of sub keyword "premiums" in meta description is 3.45%.
-  - The density of sub keyword "save money" in meta description is 3.45%.
-  - The density of sub keyword "us" in meta description is 3.45%.
-  - Keyword "progressive" found in H1 tag "does progressive raise your rates after 6 months?".
-  - Sub keyword "car insurance" found in H3 tag "2. How can I
-    lower my Progressive car insurance rates?", which is good.
-  - Sub keyword "rates" found in H3 tag "2. How can I
-    lower my Progressive car insurance rates?", which is good.
-  - Sub keyword "car insurance" found in H3 tag "3. Can I switch car insurance providers if my rates increase?", which is good.
-  - Sub keyword "rates" found in H3 tag "3. Can I switch car insurance providers if my rates increase?", which is good.
-  - Sub keyword "us" found in H2 tag "Conclusion", which is good.
-  - Sub keyword "rates" found in H1 tag "does progressive raise your rates after 6 months?", which is good.
-  - You have 9 this.headings.
+  - You have 1 sub keywords in title.
+  - Meta description is 151 characters long.
+  - Keyword density of meta description is 3.85%, which is good.
+  - The density of sub keyword "car insurance" in meta description is 3.85%.
+  - The density of sub keyword "rates" in meta description is 3.85%.
+  - You have 3 headings.
   - Nice. You have h1 tag, which is essential.
   - Nice. You have h2 tag, which is essential.
   - You have h3 tag, which is good.
+  - Keyword "progressive" found in H1 tag "Does Progressive Raise Your Rates After 6 Months?".
+  - Sub keyword "rates" found in H1 tag "Does Progressive Raise Your Rates After 6 Months?", which is good.
+  - Sub keyword "car insurance" found in H2 tag "How Are Car Insurance Rates Determined?", which is good.
+  - Sub keyword "rates" found in H2 tag "How Are Car Insurance Rates Determined?", which is good.
+  - Sub keyword "car insurance" found in H3 tag "How to Save Money on Car Insurance", which is good.
+  - You have 1 internal links.
+  - You have 1 outbound links.
+  - No duplicate internal links.
+  - No duplicate outbound links.
 
-Minor Warnings: 48
+Minor Warnings: 5
   - Meta description does not start with keyword. It starts with "find out if progress", try starting with keyword. Not starting with keyword is not a big issue, but it is recommended to start with keyword.
   - Keyword "progressive" not found in H2 tag "How Are Car Insurance Rates Determined?".
-  - Keyword "progressive" not found in H2 tag "Does Progressive Raise Your Rates?".
-  - Keyword "progressive" not found in H3 tag "How to Save Money on Car Insurance in
-    the US".
-  - Keyword "progressive" not found in H2 tag "Frequently Asked Questions".
-  - Keyword "progressive" not found in H3 tag "1. Does Progressive offer accident forgiveness?".
-  - Keyword "progressive" not found in H3 tag "2. How can I
-    lower my Progressive car insurance rates?".
-  - Keyword "progressive" not found in H3 tag "3. Can I switch car insurance providers if my rates increase?".
-  - Keyword "progressive" not found in H2 tag "Conclusion".
-  - Sub keyword "car insurance" not found in H2 tag "How Are Car Insurance Rates Determined?".
-  - Sub keyword "rates" not found in H2 tag "How Are Car Insurance Rates Determined?".
-  - Sub keyword "premiums" not found in H2 tag "How Are Car Insurance Rates Determined?".
-  - Sub keyword "save money" not found in H2 tag "How Are Car Insurance Rates Determined?".
-  - Sub keyword "us" not found in H2 tag "How Are Car Insurance Rates Determined?".
-  - Sub keyword "car insurance" not found in H2 tag "Does Progressive Raise Your Rates?".
-  - Sub keyword "rates" not found in H2 tag "Does Progressive Raise Your Rates?".
-  - Sub keyword "premiums" not found in H2 tag "Does Progressive Raise Your Rates?".
-  - Sub keyword "save money" not found in H2 tag "Does Progressive Raise Your Rates?".
-  - Sub keyword "us" not found in H2 tag "Does Progressive Raise Your Rates?".
-  - Sub keyword "car insurance" not found in H3 tag "How to Save Money on Car Insurance in
-    the US".
-  - Sub keyword "rates" not found in H3 tag "How to Save Money on Car Insurance in
-    the US".
-  - Sub keyword "premiums" not found in H3 tag "How to Save Money on Car Insurance in
-    the US".
-  - Sub keyword "save money" not found in H3 tag "How to Save Money on Car Insurance in
-    the US".
-  - Sub keyword "us" not found in H3 tag "How to Save Money on Car Insurance in
-    the US".
-  - Sub keyword "car insurance" not found in H2 tag "Frequently Asked Questions".
-  - Sub keyword "rates" not found in H2 tag "Frequently Asked Questions".
-  - Sub keyword "premiums" not found in H2 tag "Frequently Asked Questions".
-  - Sub keyword "save money" not found in H2 tag "Frequently Asked Questions".
-  - Sub keyword "us" not found in H2 tag "Frequently Asked Questions".
-  - Sub keyword "car insurance" not found in H3 tag "1. Does Progressive offer accident forgiveness?".
-  - Sub keyword "rates" not found in H3 tag "1. Does Progressive offer accident forgiveness?".
-  - Sub keyword "premiums" not found in H3 tag "1. Does Progressive offer accident forgiveness?".
-  - Sub keyword "save money" not found in H3 tag "1. Does Progressive offer accident forgiveness?".
-  - Sub keyword "us" not found in H3 tag "1. Does Progressive offer accident forgiveness?".
-  - Sub keyword "premiums" not found in H3 tag "2. How can I
-    lower my Progressive car insurance rates?".
-  - Sub keyword "save money" not found in H3 tag "2. How can I
-    lower my Progressive car insurance rates?".
-  - Sub keyword "us" not found in H3 tag "2. How can I
-    lower my Progressive car insurance rates?".
-  - Sub keyword "premiums" not found in H3 tag "3. Can I switch car insurance providers if my rates increase?".
-  - Sub keyword "save money" not found in H3 tag "3. Can I switch car insurance providers if my rates increase?".
-  - Sub keyword "us" not found in H3 tag "3. Can I switch car insurance providers if my rates increase?".
-  - Sub keyword "car insurance" not found in H2 tag "Conclusion".
-  - Sub keyword "rates" not found in H2 tag "Conclusion".
-  - Sub keyword "premiums" not found in H2 tag "Conclusion".
-  - Sub keyword "save money" not found in H2 tag "Conclusion".
-  - Sub keyword "car insurance" not found in H1 tag "does progressive raise your rates after 6 months?".
-  - Sub keyword "premiums" not found in H1 tag "does progressive raise your rates after 6 months?".
-  - Sub keyword "save money" not found in H1 tag "does progressive raise your rates after 6 months?".
-  - Sub keyword "us" not found in H1 tag "does progressive raise your rates after 6 months?".
-
-SEO Score: 78.125
-Keyword SEO Score: 100
-Keyword Density: 1.392757660167131
-Sub Keyword Density: (car insurance 2.3676880222841223),(rates 4.178272980501393),(premiums 1.392757660167131),(save money 0.5571030640668524),(us 1.392757660167131)
-Keyword Frequency: 10
-Word Count: 718
-Total Links: 1
+  - Keyword "progressive" not found in H3 tag "How to Save Money on Car Insurance".
+  - Sub keyword "car insurance" not found in H1 tag "Does Progressive Raise Your Rates After 6 Months?".
+  - Sub keyword "rates" not found in H3 tag "How to Save Money on Car Insurance".
 ```
 
-The data returned by the `analyzeSeo` function is in the following format:
+## API
+
+### `analyzeSeo(content, options?)`
+
+Synchronous. Returns a `SeoAnalysisResult`.
+
+#### `content` (required)
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `title` | `string` | The page title (the `<title>` tag text) |
+| `htmlText` | `string` | The HTML content to analyze |
+| `keyword` | `string` | The main keyword to check for |
+| `subKeywords` | `string[]` | Secondary keywords (pass `[]` for none) |
+| `metaDescription` | `string` | The meta description text |
+
+The input object is never mutated. Matching is case-insensitive.
+
+#### `options` (optional)
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `siteDomainName` | `string` | Your domain, e.g. `"example.com"`. Absolute links containing it count as internal; without it, only relative links (`/`, `./`, `../`, `#`) count as internal. |
+| `rules` | `Record<string, "off">` | Disable individual rules by id, e.g. `{ "heading-h3-presence": "off" }`. Disabled rules produce no messages and are excluded from the score entirely. |
+
+### Rules reference
+
+Every check is a rule with an id and a weight. Failing severity is what the rule reports when the check fails.
+
+| Rule id | Checks | Weight | Failing severity |
+| --- | --- | --- | --- |
+| `keyword-presence` | A main keyword is provided | 10 | warning |
+| `keyword-overstuffing` | Keyword density is not above 5% | 8 | warning |
+| `keyword-density` | Keyword density between 0.46% and 1.1% | 10 | warning |
+| `sub-keywords-presence` | Sub keywords are provided | 4 | minor |
+| `sub-keyword-density` | Each sub keyword density between 0.12% and 0.9% | 6 | warning / minor |
+| `title-length` | Title between 40 and 70 characters | 8 | warning |
+| `title-keyword` | Main keyword appears in the title | 8 | warning |
+| `title-sub-keywords` | At least one sub keyword appears in the title | 4 | minor |
+| `meta-description-length` | Meta description between 100 and 160 characters | 8 | warning |
+| `meta-description-keyword-density` | Keyword density in meta description between 2% and 5% | 6 | warning |
+| `meta-description-starts-with-keyword` | Meta description starts with the keyword | 2 | minor |
+| `meta-description-sub-keywords` | Each sub keyword density in meta description between 2% and 5% | 4 | warning / minor |
+| `headings-presence` | At least one heading tag exists | 6 | warning |
+| `heading-single-h1` | Exactly one h1 tag | 8 | warning |
+| `heading-h2-presence` | At least one h2 tag | 4 | warning |
+| `heading-h3-presence` | At least one h3 tag | 2 | minor |
+| `headings-keyword` | Keyword appears in each heading | 4 | minor |
+| `headings-sub-keywords` | Sub keywords appear in each heading | 2 | minor |
+| `links-internal-count` | At least one unique internal link per 300 words | 6 | warning |
+| `links-outbound-count` | At least one unique outbound link per 400 words | 4 | warning |
+| `links-internal-duplicates` | Not more than one duplicate internal link | 2 | minor |
+| `links-outbound-duplicates` | Not more than one duplicate outbound link | 2 | minor |
+
+Rules that do not apply are skipped without penalty. For example, sub keyword rules are skipped
+when `subKeywords` is empty, and keyword rules are skipped when `keyword` is empty.
+
+### Scoring
+
+`seoScore` is a weighted ratio: each rule that passes earns its full weight, a minor warning earns half,
+and a warning earns nothing. The score is earned weight divided by the total weight of all applicable
+rules, times 100. Disabled and skipped rules leave the denominator, so turning a rule off never
+penalizes (or inflates) your score. Rules that produce several results (one per sub keyword or per
+heading) are averaged so their influence never grows with input size.
+
+`keywordSeoScore` is a separate density-based figure (keyword density in content and title, plus sub
+keyword presence), capped at 100.
+
+### Result shape
 
 ```typescript
-import type {KeywordDensity, LinksGroup} from "seord";
-
-interface SeoData {
-    seoScore: number,
-    wordCount: number,
-    keywordSeoScore: number,
-    keywordFrequency: number,
-    messages: { warnings: string[], goodPoints: string[], minorWarnings: string[] },
-    keywordDensity: number,
-    subKeywordDensity: KeywordDensity[],
-    totalLinks: number,
-    internalLinks: LinksGroup,
-    outboundLinks: LinksGroup,
-    titleSEO: {
-        subKeywordsWithTitle: KeywordDensity[],
-        keywordWithTitle: KeywordDensity,
-        wordCount: number
-    }
+interface SeoAnalysisResult {
+    seoScore: number;
+    keywordSeoScore: number;
+    messages: { warnings: string[]; minorWarnings: string[]; goodPoints: string[] };
+    rules: Array<{ id: string; status: "good" | "warning" | "minor"; weight: number; message: string }>;
+    keyword: { density: number; frequency: number; inTitle: KeywordDensity };
+    subKeywords: { density: KeywordDensity[]; inTitle: KeywordDensity[] };
+    links: { total: number; internal: LinksGroup; outbound: LinksGroup };
+    words: { total: number; title: number };
 }
+
+interface KeywordDensity { keyword: string; density: number; position?: number }
+interface LinksGroup { all: Link[]; duplicate: Link[]; unique: Link[] }
+interface Link { text: string; href: string }
 ```
+
 > You do not need TypeScript to use this library. The above is just to show the data structure.
+
+## Migrating from 0.0.x
+
+Version 1.0.0 is a clean break from the `SeoCheck` class API:
+
+- `new SeoCheck(contentJson, domain)` + `await seoCheck.analyzeSeo()` becomes
+  `analyzeSeo(content, { siteDomainName: domain })`. The call is synchronous; drop the `await`.
+- `strictMode` is gone. The old non-strict default treated your `<title>` as an extra `<h1>`, which
+  produced a false "more than one h1 tag" warning on pages with exactly one real h1 (issue #4).
+  The title is now never counted as a heading; title checks are their own rules.
+- `languageCode` and `countryCode` are no longer accepted; they were never used.
+- `titleSEO.keywordWithTitle` is now `keyword.inTitle`, `titleSEO.subKeywordsWithTitle` is
+  `subKeywords.inTitle`, `titleSEO.wordCount` is `words.title`, `wordCount` is `words.total`,
+  `keywordDensity` is `keyword.density`, `keywordFrequency` is `keyword.frequency`,
+  `subKeywordDensity` is `subKeywords.density`, and `totalLinks`/`internalLinks`/`outboundLinks`
+  live under `links`.
+- `seoScore` is now weighted (see Scoring above), so the number will differ from 0.0.x for the
+  same content. `messages` keeps the same three-bucket shape.
 
 ## Issue Reporting
 
@@ -239,9 +237,6 @@ Contributions are welcome, and they are greatly appreciated! Every little bit he
 ## License
 
 This project is licensed under the MIT license. Please see the [LICENSE](LICENSE) file for more information.
-
-> **Note:** This library is still in development. I will be adding more features in the future.
-> If you have any suggestions, please let me know.
 
 Please note that this library is not affiliated with Google or any other search engine.
 > It does not guarantee the SEO score calculated by this library will be the same as the SEO score

@@ -1,11 +1,19 @@
 {
   "name": "seord",
-  "version": "0.0.5-patch.4",
+  "version": "1.0.0",
   "description": "Advanced SEO Analyzer",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bishwas-py/seord.git"
+  },
   "scripts": {
     "build": "tsc",
+    "test": "vitest run",
     "prepare": "npm run build"
   },
   "keywords": [
@@ -16,15 +24,14 @@
   ],
   "author": "bishwas bhandari",
   "license": "MIT",
-
   "bugs": {
     "url": "https://github.com/Bishwas-py/seord/issues"
   },
   "homepage": "https://github.com/Bishwas-py/seord#readme",
-
   "devDependencies": {
     "@types/node": "^20.4.5",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vitest": "^4.1.10"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12"
